@@ -8,7 +8,7 @@
 """
 import json
 
-from pyalysis.warnings import TokenWarning
+from pyalysis.warnings import TokenWarning, ASTWarning
 from pyalysis._compat import PYPY
 
 
@@ -27,24 +27,31 @@ class JSONFormatter(object):
         """
         if isinstance(warning, TokenWarning):
             self.format_token_warning(warning)
+        elif isinstance(warning, ASTWarning):
+            self.format_ast_warning(warning)
         else:
             raise NotImplementedError(warning)
 
-    def format_token_warning(self, warning):
-        js = json.dumps(
-            {
-                u'message': warning.message,
-                u'start': warning.start,
-                u'end': warning.end,
-                u'file': warning.file
-            },
-            ensure_ascii=False,
-            sort_keys=True,
-            indent=4
-        )
+    def dump(self, d):
+        js = json.dumps(d, ensure_ascii=False, sort_keys=True, indent=4)
         if PYPY:
             # PyPy seems to have a bug that makes json.dumps produce bytes,
             # even if ensure_ascii=True is passed.
             js = js.decode('utf-8')
         self.output.write(js)
         self.output.write(u'\n')
+
+    def format_token_warning(self, warning):
+        self.dump({
+            u'message': warning.message,
+            u'start': warning.start,
+            u'end': warning.end,
+            u'file': warning.file
+        })
+
+    def format_ast_warning(self, warning):
+        self.dump({
+            u'message': warning.message,
+            u'line': warning.line,
+            u'file': warning.file
+        })

@@ -16,7 +16,7 @@ from argvard import Argvard
 
 from pyalysis import __version__
 from pyalysis.formatters import JSONFormatter
-from pyalysis.analysers import TokenAnalyser
+from pyalysis.analysers import TokenAnalyser, ASTAnalyser
 from pyalysis._compat import PY2
 
 
@@ -46,10 +46,12 @@ def main(context, files):
     formatter = context['format'](context['output'])
     for path in files:
         with open(path, 'rb') as module:
-            analyser = TokenAnalyser(module)
-            for warning in analyser.analyse():
-                warned = True
-                formatter.format(warning)
+            for analyser_cls in [TokenAnalyser, ASTAnalyser]:
+                analyser = analyser_cls(module)
+                for warning in analyser.analyse():
+                    warned = True
+                    formatter.format(warning)
+                module.seek(0)
     if warned:
         sys.exit(1)
     else:
