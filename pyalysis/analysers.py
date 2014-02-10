@@ -36,7 +36,7 @@ class TokenAnalyser(object):
         information in `tok`.
         """
         self.warnings.append(
-            warning_cls(message, tok.start, tok.end, self.module.filename)
+            warning_cls(message, tok.start, tok.end, self.module.name)
         )
 
     def generate_tokens(self):

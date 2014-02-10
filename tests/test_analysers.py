@@ -20,7 +20,7 @@ class TokenAnalyserTest(object):
         module = BytesIO(
             textwrap.dedent(source).encode('utf-8')
         )
-        module.filename = '<test>'
+        module.name = '<test>'
         analyser = TokenAnalyser(module)
         return analyser.analyse()
 
