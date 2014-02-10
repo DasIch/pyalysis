@@ -10,4 +10,5 @@ Additional Notes
 
 .. toctree::
 
+   notes/changelog.rst
    notes/license.rst
