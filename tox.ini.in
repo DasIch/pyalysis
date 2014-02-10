@@ -1,0 +1,119 @@
+#!/usr/bin/env python
+# coding: utf-8
+# vim: set filetype=python:
+from io import StringIO
+from collections import OrderedDict
+
+
+SUPPORTED_INTERPRETERS = [
+    # (tox, executable)
+    (u'py27', u'python2.7'),
+    (u'pypy', u'pypy'),
+    (u'py33', u'python3.3')
+]
+
+
+INTERPRETER_INDEPENDENT_ENVIRONMENTS = OrderedDict([
+    (None, OrderedDict([
+        (u'deps', [u'-rtests/requirements.txt']),
+        (u'commands', [u'py.test tests']),
+    ]))
+])
+
+
+INTERPRETER_DEPENDENT_ENVIRONMENTS = OrderedDict([
+    (u'packaging', OrderedDict([
+        (u'commands', [
+            u'python setup.py check --strict'
+        ])
+    ])),
+    (u'docs', OrderedDict([
+        (u'deps', [u'-rdocs/requirements.txt']),
+        (u'commands', [
+            u'sphinx-build -W -b {0} -d {{envtmpdir}}/doctrees docs docs/_build/{0}'.format(builder)
+            for builder in [u'html', u'doctest', u'linkcheck']
+        ])
+    ]))
+])
+
+
+def create_independent_environment(name, environment):
+    return OrderedDict([(u'testenv' if name is None else name, environment)])
+
+
+def create_dependent_environment(name, environment):
+    for interpreter, executable in SUPPORTED_INTERPRETERS:
+        result = OrderedDict([
+            (u'basepython', executable)
+        ])
+        result.update(environment)
+        yield OrderedDict([
+            (u'testenv:' + name + u'-' + interpreter, result)
+        ])
+
+
+def create_independent_environments():
+    environments = OrderedDict()
+    for name, environment in INTERPRETER_INDEPENDENT_ENVIRONMENTS.items():
+        environments.update(create_independent_environment(name, environment))
+    return environments
+
+
+def create_dependent_environments():
+    environments = OrderedDict()
+    for name, environment in INTERPRETER_DEPENDENT_ENVIRONMENTS.items():
+        for env in create_dependent_environment(name, environment):
+            environments.update(env)
+    return environments
+
+
+def create_config():
+    config = OrderedDict([
+        (u'tox', OrderedDict())
+    ])
+    config.update(create_independent_environments())
+    config.update(create_dependent_environments())
+
+    envlist = []
+    for name, _ in SUPPORTED_INTERPRETERS:
+        envlist.append(name)
+    for section_name in config:
+        if section_name.startswith(u'testenv:'):
+            env_name = section_name[len(u'testenv:'):]
+            envlist.append(env_name)
+    config[u'tox'][u'envlist'] = u','.join(envlist)
+    return config
+
+
+def dump(config, fp):
+    fp.write(dumps(config))
+
+
+def dumps(config):
+    buffer = StringIO()
+    for name, section in config.items():
+        buffer.write(u'[' + name + u']\n')
+        for key, value in section.items():
+            buffer.write(key + u' = ')
+            if isinstance(value, list):
+                indentation = len(key + u' = ')
+                buffer.write(value[0])
+                buffer.write(u'\n')
+                for item in value[1:]:
+                    buffer.write(u' ' * indentation)
+                    buffer.write(item)
+                    buffer.write(u'\n')
+            else:
+                buffer.write(value)
+                buffer.write(u'\n')
+        buffer.write(u'\n')
+    return buffer.getvalue().strip()
+
+
+def main():
+    with open('tox.ini', 'w') as tox_file:
+        dump(create_config(), tox_file)
+
+
+if __name__ == '__main__':
+    main()

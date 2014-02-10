@@ -11,6 +11,7 @@ dev-env:
 		    -r docs/requirements.txt \
 		    -r tests/requirements.txt
 	pip install -e .
+	python tox.ini.in
 
 test:
 	py.test tests

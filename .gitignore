@@ -1,5 +1,7 @@
 *.pyc
 *.egg-info
+
 .tox
+tox.ini
 
 docs/_build
