@@ -9,9 +9,9 @@
 import textwrap
 from io import BytesIO
 
-from pyalysis.analysers import TokenAnalyser
+from pyalysis.analysers import TokenAnalyser, ASTAnalyser
 from pyalysis.warnings import (
-    WrongNumberOfIndentationSpaces, MixedTabsAndSpaces
+    WrongNumberOfIndentationSpaces, MixedTabsAndSpaces, MultipleImports
 )
 
 
@@ -93,3 +93,27 @@ class TestIndentation(TokenAnalyserTest):
         second = mixed_warnings[1]
         assert second.start == (4, 7)
         assert second.end == (4, 8)
+
+
+class ASTAnalyserTest(object):
+    def analyse_source(self, source):
+        module = BytesIO(
+            textwrap.dedent(source).encode('utf-8')
+        )
+        module.name = '<test>'
+        analyser = ASTAnalyser(module)
+        return analyser.analyse()
+
+
+class TestImport(ASTAnalyserTest):
+    def test_multi_import(self):
+        source = u"""
+        import foo, bar
+        """
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, MultipleImports)
+        assert warning.message == u'Multiple imports on one line. Should be on separate ones.'
+        assert warning.line == 2
+        assert warning.file == '<test>'

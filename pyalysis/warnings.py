@@ -22,3 +22,14 @@ class WrongNumberOfIndentationSpaces(TokenWarning):
 
 class MixedTabsAndSpaces(TokenWarning):
     pass
+
+
+class ASTWarning(object):
+    def __init__(self, message, line, file):
+        self.message = message
+        self.line = line
+        self.file = file
+
+
+class MultipleImports(ASTWarning):
+    pass

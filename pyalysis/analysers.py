@@ -8,10 +8,11 @@
 """
 import token
 import tokenize
+import ast
 from collections import namedtuple
 
 from pyalysis.warnings import (
-    WrongNumberOfIndentationSpaces, MixedTabsAndSpaces
+    WrongNumberOfIndentationSpaces, MixedTabsAndSpaces, MultipleImports
 )
 from pyalysis._compat import PY2
 
@@ -98,4 +99,49 @@ class TokenAnalyser(object):
                 u'and inconsistent. Use either tabs or spaces exclusively, '
                 u'preferably spaces.',
                 tok
+            )
+
+
+class ASTAnalyser(object):
+    """
+    AST-level analyser of Python source code.
+    """
+    def __init__(self, module):
+        self.module = module
+
+        self.ast = ast.parse(module.read(), module.name)
+        self.warnings = []
+
+    def emit(self, warning_cls, message, node):
+        """
+        Creates an instance of `warning_cls` using the given `message` and the
+        information in `node` and appends it to :attr:`warnings`.
+        """
+        self.warnings.append(
+            warning_cls(message, node.lineno, self.module.name)
+        )
+
+    def analyse(self):
+        """
+        Analyses the module passed to the instance and returns a list of
+        :class:`pyalysis.warnings.ASTWarning` instances.
+        """
+        self.analyse_node(self.ast)
+        return self.warnings
+
+    def analyse_node(self, node):
+        for child in ast.iter_child_nodes(node):
+            self.analyse_node(child)
+        name = node.__class__.__name__
+        method_name = 'analyse_node_' + name
+        method = getattr(self, method_name, None)
+        if method is not None:
+            method(node)
+
+    def analyse_node_Import(self, node):
+        if len(node.names) > 1:
+            self.emit(
+                MultipleImports,
+                u'Multiple imports on one line. Should be on separate ones.',
+                node
             )
