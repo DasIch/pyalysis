@@ -16,7 +16,13 @@ SUPPORTED_INTERPRETERS = [
 INTERPRETER_INDEPENDENT_ENVIRONMENTS = OrderedDict([
     (None, OrderedDict([
         (u'deps', [u'-rtests/requirements.txt']),
-        (u'commands', [u'py.test tests']),
+        (u'commands', [u'py.test tests'])
+    ])),
+    (u'pyalysis', OrderedDict([
+        (u'whitelist_externals', [u'sh']),
+        (u'commands', [
+            u'sh -c "find pyalysis tests -iname \\"*.py\\" | xargs pyalysis"'
+        ])
     ]))
 ])
 
@@ -38,7 +44,9 @@ INTERPRETER_DEPENDENT_ENVIRONMENTS = OrderedDict([
 
 
 def create_independent_environment(name, environment):
-    return OrderedDict([(u'testenv' if name is None else name, environment)])
+    return OrderedDict([
+        (u'testenv' if name is None else u'testenv:' + name, environment)
+    ])
 
 
 def create_dependent_environment(name, environment):
