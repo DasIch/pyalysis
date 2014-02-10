@@ -7,9 +7,9 @@ help:
 	@echo "make clean    - Removes all untracked files"
 
 dev-env:
-	pip install -r doc-requirements.txt \
-		    -r dev-requirements.txt \
-		    -r test-requirements.txt
+	pip install -r dev-requirements.txt \
+		    -r docs/requirements.txt \
+		    -r tests/requirements.txt
 	pip install -e .
 
 test:
