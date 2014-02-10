@@ -12,3 +12,4 @@ Additional Notes
 
    notes/changelog.rst
    notes/license.rst
+   notes/authors.rst

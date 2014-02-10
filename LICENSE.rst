@@ -1,7 +1,7 @@
 License
 =======
 
-Copyright (c) 2014 by Daniel Neuhäuser
+Copyright (c) 2014 by Daniel Neuhäuser and Contributors, see AUTHORS.rst
 
 Redistribution and use in source and binary forms of the software as well
 as documentation, with or without modification, are permitted provided

@@ -3,7 +3,7 @@
     setup
     ~~~~~
 
-    :copyright: 2014 by Daniel Neuhäuser
+    :copyright: 2014 by Daniel Neuhäuser and Contributors
     :license: BSD, see LICENSE.rst for details
 """
 from setuptools import setup, find_packages
@@ -14,7 +14,7 @@ setup(
     version='0.1.0-dev',
     url='https://github.com/DasIch/Pythonic',
 
-    author='Daniel Neuhäuser',
+    author='Daniel Neuhäuser and Contributors',
     author_email='ich@danielneuhaeuser.de',
 
     install_requires=[
