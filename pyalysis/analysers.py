@@ -12,7 +12,8 @@ import ast
 from collections import namedtuple
 
 from pyalysis.warnings import (
-    WrongNumberOfIndentationSpaces, MixedTabsAndSpaces, MultipleImports
+    WrongNumberOfIndentationSpaces, MixedTabsAndSpaces, MultipleImports,
+    StarImport
 )
 from pyalysis._compat import PY2
 
@@ -143,5 +144,13 @@ class ASTAnalyser(object):
             self.emit(
                 MultipleImports,
                 u'Multiple imports on one line. Should be on separate ones.',
+                node
+            )
+
+    def analyse_node_ImportFrom(self, node):
+        if len(node.names) == 1 and node.names[0].name == u'*':
+            self.emit(
+                StarImport,
+                u'from ... import * should be avoided.',
                 node
             )

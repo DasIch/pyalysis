@@ -11,7 +11,8 @@ from io import BytesIO
 
 from pyalysis.analysers import TokenAnalyser, ASTAnalyser
 from pyalysis.warnings import (
-    WrongNumberOfIndentationSpaces, MixedTabsAndSpaces, MultipleImports
+    WrongNumberOfIndentationSpaces, MixedTabsAndSpaces, MultipleImports,
+    StarImport
 )
 
 
@@ -115,5 +116,17 @@ class TestImport(ASTAnalyserTest):
         warning = warnings[0]
         assert isinstance(warning, MultipleImports)
         assert warning.message == u'Multiple imports on one line. Should be on separate ones.'
+        assert warning.line == 2
+        assert warning.file == '<test>'
+
+    def test_star_import(self):
+        source = u"""
+        from foo import *
+        """
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, StarImport)
+        assert warning.message == u'from ... import * should be avoided.'
         assert warning.line == 2
         assert warning.file == '<test>'

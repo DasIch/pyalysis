@@ -33,3 +33,7 @@ class ASTWarning(object):
 
 class MultipleImports(ASTWarning):
     pass
+
+
+class StarImport(ASTWarning):
+    pass
