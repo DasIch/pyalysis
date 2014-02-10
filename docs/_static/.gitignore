@@ -1,0 +1,4 @@
+# This file ensures that this directory is not ignored by git, even though
+# this directory is empty at the moment.
+#
+# If a file is created in this directory, this file should be removed.
