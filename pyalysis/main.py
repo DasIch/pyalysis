@@ -3,6 +3,8 @@
     pyalysis.main
     ~~~~~~~~~~~~~
 
+    The Pyalysis command line interface.
+
     :copyright: 2014 by Daniel Neuhäuser and Contributors
     :license: BSD, see LICENSE.rst
 """
