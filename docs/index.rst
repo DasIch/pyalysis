@@ -1,14 +1,14 @@
-Pythonic
+Pyalysis
 ========
 
-Welcome to the documentation of Pythonic, a static analysis tool for Python
+Welcome to the documentation of Pyalysis, a static analysis tool for Python
 applications.
 
 
 Development
 -----------
 
-Resources for developing Pythonic itself.
+Resources for developing Pyalysis itself.
 
 .. toctree::
 

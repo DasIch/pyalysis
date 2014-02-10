@@ -1,6 +1,6 @@
 # coding: utf-8
 """
-    pythonic
+    pyalysis
     ~~~~~~~~
 
     :copyright: 2014 by Daniel Neuhäuser and Contributors
@@ -9,5 +9,5 @@
 import pkg_resources
 
 
-__version__ = pkg_resources.get_distribution('Pythonic').version
+__version__ = pkg_resources.get_distribution('Pyalysis').version
 __version_info__ = tuple(map(int, __version__.split('-')[0].split('.')))

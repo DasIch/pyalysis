@@ -1,7 +1,7 @@
 Starting Development
 ====================
 
-This document describes how to start developing on Pythonic. Familiarity with
+This document describes how to start developing on Pyalysis. Familiarity with
 git_, GitHub_, and commonly used Python tools such as virtualenv_, pytest_ and,
 tox_ is assumed.
 
@@ -11,7 +11,7 @@ tox_ is assumed.
 .. _pytest: http://pytest.org
 .. _tox: http://tox.readthedocs.org
 
-To start working on Pythonic you should fork the Pythonic repository on Github
+To start working on Pyalysis you should fork the Pyalysis repository on Github
 and make a local clone of your fork.
 
 Once you have done that you should create a virtualenv, activate it, and

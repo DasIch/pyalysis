@@ -10,9 +10,9 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name='Pythonic',
+    name='Pyalysis',
     version='0.1.0-dev',
-    url='https://github.com/DasIch/Pythonic',
+    url='https://github.com/DasIch/Pyalysis',
 
     author='Daniel Neuhäuser and Contributors',
     author_email='ich@danielneuhaeuser.de',
@@ -23,7 +23,7 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'pythonic = pythonic.main:application'
+            'pyalysis = pyalysis.main:application'
         ]
     }
 )

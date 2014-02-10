@@ -8,13 +8,13 @@
 """
 import re
 
-import pythonic
+import pyalysis
 
 
 def test_version():
-    assert re.match(r'\d+\.\d+\.\d+(-\w+)?', pythonic.__version__)
+    assert re.match(r'\d+\.\d+\.\d+(-\w+)?', pyalysis.__version__)
 
 
 def test_version_info():
-    assert len(pythonic.__version_info__) == 3
-    assert all(isinstance(part, int) for part in pythonic.__version_info__)
+    assert len(pyalysis.__version_info__) == 3
+    assert all(isinstance(part, int) for part in pyalysis.__version_info__)

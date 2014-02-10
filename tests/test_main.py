@@ -10,9 +10,9 @@ import subprocess
 
 import pytest
 
-from pythonic import __version__
+from pyalysis import __version__
 
 
 def test_version():
-    output = subprocess.check_output(['pythonic', '--version']).decode('ascii')
+    output = subprocess.check_output(['pyalysis', '--version']).decode('ascii')
     assert output.strip() == __version__

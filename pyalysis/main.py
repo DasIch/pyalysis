@@ -1,6 +1,6 @@
 # coding: utf-8
 """
-    pythonic.main
+    pyalysis.main
     ~~~~~~~~~~~~~
 
     :copyright: 2014 by Daniel Neuhäuser and Contributors
@@ -11,7 +11,7 @@ import sys
 
 from argvard import Argvard
 
-from pythonic import __version__
+from pyalysis import __version__
 
 
 application = Argvard()
