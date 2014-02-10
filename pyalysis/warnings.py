@@ -18,3 +18,7 @@ class TokenWarning(object):
 
 class WrongNumberOfIndentationSpaces(TokenWarning):
     pass
+
+
+class MixedTabsAndSpaces(TokenWarning):
+    pass

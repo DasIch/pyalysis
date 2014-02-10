@@ -10,7 +10,9 @@ import token
 import tokenize
 from collections import namedtuple
 
-from pyalysis.warnings import WrongNumberOfIndentationSpaces
+from pyalysis.warnings import (
+    WrongNumberOfIndentationSpaces, MixedTabsAndSpaces
+)
 from pyalysis._compat import PY2
 
 
@@ -86,3 +88,14 @@ class TokenAnalyser(object):
         # level. This is why we maintain a stack with each element being the
         # added amount of indentation.
         self.indentation_stack.pop()
+
+    def analyse_NEWLINE(self, tok):
+        indentation = tok.logical_line[:-len(tok.logical_line.lstrip())]
+        if u' ' in indentation and u'\t' in indentation:
+            self.emit(
+                MixedTabsAndSpaces,
+                u'Tabs and spaces are mixed. This is disallowed on Python 3 '
+                u'and inconsistent. Use either tabs or spaces exclusively, '
+                u'preferably spaces.',
+                tok
+            )

@@ -10,7 +10,9 @@ import textwrap
 from io import BytesIO
 
 from pyalysis.analysers import TokenAnalyser
-from pyalysis.warnings import WrongNumberOfIndentationSpaces
+from pyalysis.warnings import (
+    WrongNumberOfIndentationSpaces, MixedTabsAndSpaces
+)
 
 
 class TokenAnalyserTest(object):
@@ -67,3 +69,27 @@ class TestIndentation(TokenAnalyserTest):
         assert second.message == u'Indented by 2 spaces instead of 4 as demanded by PEP 8'
         assert second.start == (6, 0)
         assert second.end == (6, 6)
+
+    def test_mix_spaces_and_tabs(self):
+        source = u"""
+        def foo():
+        \t  1
+        \t  pass
+        """
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 3
+        assert any(
+            isinstance(w, WrongNumberOfIndentationSpaces) for w in warnings
+        )
+        mixed_warnings = [
+            w for w in warnings if isinstance(w, MixedTabsAndSpaces)
+        ]
+        assert len(mixed_warnings) == 2
+
+        first = mixed_warnings[0]
+        assert first.start == (3, 4)
+        assert first.end == (3, 5)
+
+        second = mixed_warnings[1]
+        assert second.start == (4, 7)
+        assert second.end == (4, 8)
