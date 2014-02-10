@@ -14,4 +14,4 @@ test:
 clean:
 	git ls-files --directory --other | xargs rm -r
 
-.PHONY: help dev-env clean
+.PHONY: help dev-env test clean
