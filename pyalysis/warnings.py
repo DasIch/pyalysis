@@ -21,7 +21,7 @@ class LineWarning(Warning):
 
 
 class LineTooLong(LineWarning):
-    pass
+    type = 'line-too-long'
 
 
 class TokenWarning(Warning):
@@ -36,11 +36,11 @@ class TokenWarning(Warning):
 
 
 class WrongNumberOfIndentationSpaces(TokenWarning):
-    pass
+    type = 'wrong-number-of-indentation-spaces'
 
 
 class MixedTabsAndSpaces(TokenWarning):
-    pass
+    type = 'mixed-tabs-and-spaces'
 
 
 class ASTWarning(Warning):
@@ -50,24 +50,24 @@ class ASTWarning(Warning):
 
 
 class MultipleImports(ASTWarning):
-    pass
+    type = 'multiple-imports'
 
 
 class StarImport(ASTWarning):
-    pass
+    type = 'star-import'
 
 
 class IndiscriminateExcept(ASTWarning):
-    pass
+    type = 'indiscriminate-except'
 
 
 class GlobalKeyword(ASTWarning):
-    pass
+    type = 'global-keyword'
 
 
 class PrintStatement(ASTWarning):
-    pass
+    type = 'print-statement'
 
 
 class DivStatement(ASTWarning):
-    pass
+    type = 'div-statement'
