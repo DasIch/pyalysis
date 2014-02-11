@@ -7,6 +7,7 @@
     :license: BSD, see LICENSE.rst for details
 """
 import os
+import codecs
 import subprocess
 import textwrap
 
@@ -66,3 +67,15 @@ def test_main_unsuccessful(tmpdir):
         module,
         u'Line is longer than 79 characters. You should keep it below that'
     ))
+
+
+def test_main_ignore(tmpcwd):
+    ignore_path = os.path.join(tmpcwd, '.pyalysis.ignore')
+    with codecs.open(ignore_path, 'w', encoding='utf-8') as ignore_file:
+        ignore_file.write(u'wrong-number-of-indentation-spaces')
+
+    module_path = os.path.join(tmpcwd, 'foo.py')
+    with codecs.open(module_path, 'w', encoding='utf-8') as foo:
+        foo.write(u'def foo():\n  pass')
+
+    check_output(['pyalysis', module_path]) == u''

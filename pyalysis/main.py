@@ -17,6 +17,7 @@ from argvard import Argvard
 from pyalysis import __version__
 from pyalysis.formatters import JSONFormatter
 from pyalysis.analysers import LineAnalyser, TokenAnalyser, ASTAnalyser
+from pyalysis.ignore import load_ignore_filter
 from pyalysis._compat import PY2
 
 
@@ -26,6 +27,9 @@ if PY2:
     ).streamwriter(sys.stdout)
 else:
     stdout = sys.stdout
+
+
+IGNORE_FILE = '.pyalysis.ignore'
 
 
 application = Argvard(defaults={
@@ -42,13 +46,19 @@ def version(context):
 
 @application.main('files...')
 def main(context, files):
+    try:
+        with codecs.open(IGNORE_FILE, 'r', encoding='utf-8') as ignore_file:
+            should_emit = load_ignore_filter(ignore_file)
+    except IOError:
+        should_emit = lambda _: True
+
     warned = False
     formatter = context['format'](context['output'])
     for path in files:
         with open(path, 'rb') as module:
             for analyser_cls in [LineAnalyser, TokenAnalyser, ASTAnalyser]:
                 analyser = analyser_cls(module)
-                for warning in analyser.analyse():
+                for warning in filter(should_emit, analyser.analyse()):
                     warned = True
                     formatter.format(warning)
                 module.seek(0)
