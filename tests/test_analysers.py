@@ -32,6 +32,10 @@ class TestLineLength(LineAnalyserTest):
         warnings = self.analyse_source(source)
         assert len(warnings) == 1
 
+        source = u'a' * 79 + u'\n'
+        warnings = self.analyse_source(source)
+        assert not warnings
+
 
 class TokenAnalyserTest(object):
     def analyse_source(self, source):

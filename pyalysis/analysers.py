@@ -40,7 +40,7 @@ class LineAnalyser(object):
         return self.warnings
 
     def analyse_line(self, lineno, line):
-        if len(line) > 79:
+        if len(line.rstrip()) > 79:
             self.emit(
                 LineTooLong,
                 u'Line is longer than 79 characters. You should keep it below that',
