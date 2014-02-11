@@ -11,7 +11,7 @@ from io import BytesIO
 
 import pytest
 
-from pyalysis.utils import detect_encoding
+from pyalysis.utils import detect_encoding, classproperty
 
 
 @pytest.mark.parametrize(('source', 'expected'), [
@@ -24,3 +24,13 @@ def test_detect_encoding(source, expected):
     file = BytesIO(source)
     assert detect_encoding(file) == expected
     assert file.read() == source
+
+
+def test_classproperty():
+    class Foo(object):
+        @classproperty
+        def spam(cls):
+            return 'spam'
+
+    assert Foo.spam == 'spam'
+    assert Foo().spam == 'spam'

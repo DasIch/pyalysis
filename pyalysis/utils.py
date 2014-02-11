@@ -44,3 +44,11 @@ else:
         finally:
             file.seek(0)
         return encoding
+
+
+class classproperty(object):
+    def __init__(self, fget):
+        self.fget = fget
+
+    def __get__(self, instance, owner):
+        return self.fget(owner)
