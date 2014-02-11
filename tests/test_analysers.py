@@ -9,11 +9,28 @@
 import textwrap
 from io import BytesIO
 
-from pyalysis.analysers import TokenAnalyser, ASTAnalyser
+from pyalysis.analysers import LineAnalyser, TokenAnalyser, ASTAnalyser
 from pyalysis.warnings import (
     WrongNumberOfIndentationSpaces, MixedTabsAndSpaces, MultipleImports,
     StarImport
 )
+
+
+class LineAnalyserTest(object):
+    def analyse_source(self, source):
+        module = BytesIO(
+            textwrap.dedent(source).encode('utf-8')
+        )
+        module.name = '<test>'
+        analyser = LineAnalyser(module)
+        return analyser.analyse()
+
+
+class TestLineLength(LineAnalyserTest):
+    def test(self):
+        source = u'a' * 80
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
 
 
 class TokenAnalyserTest(object):

@@ -8,6 +8,17 @@
 """
 
 
+class LineWarning(object):
+    def __init__(self, message, line, file):
+        self.message = message
+        self.line = line
+        self.file = file
+
+
+class LineTooLong(LineWarning):
+    pass
+
+
 class TokenWarning(object):
     def __init__(self, message, start, end, file):
         self.message = message

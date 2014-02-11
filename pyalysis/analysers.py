@@ -9,13 +9,43 @@
 import token
 import tokenize
 import ast
+import codecs
 from collections import namedtuple
 
 from pyalysis.warnings import (
-    WrongNumberOfIndentationSpaces, MixedTabsAndSpaces, MultipleImports,
-    StarImport
+    LineTooLong, WrongNumberOfIndentationSpaces, MixedTabsAndSpaces,
+    MultipleImports, StarImport
 )
+from pyalysis.utils import detect_encoding
 from pyalysis._compat import PY2
+
+
+class LineAnalyser(object):
+    """
+    Line-level analyser of Python source code.
+    """
+    def __init__(self, module):
+        self.module = module
+
+        self.encoding = detect_encoding(module)
+        self.warnings = []
+
+    def emit(self, warning_cls, message, lineno):
+        self.warnings.append(warning_cls(message, lineno, self.module.name))
+
+    def analyse(self):
+        reader = codecs.lookup(self.encoding).streamreader(self.module)
+        for i, line in enumerate(reader, 1):
+            self.analyse_line(i, line)
+        return self.warnings
+
+    def analyse_line(self, lineno, line):
+        if len(line) > 79:
+            self.emit(
+                LineTooLong,
+                u'Line is longer than 79 characters. You should keep it below that',
+                lineno
+            )
 
 
 Token = namedtuple('Token', ['type', 'lexeme', 'start', 'end', 'logical_line'])
