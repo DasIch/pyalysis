@@ -25,14 +25,17 @@ class JSONFormatter(object):
         """
         Formats a single `warning`.
         """
-        if isinstance(warning, LineWarning):
-            self.format_line_warning(warning)
-        elif isinstance(warning, TokenWarning):
-            self.format_token_warning(warning)
-        elif isinstance(warning, ASTWarning):
-            self.format_ast_warning(warning)
-        else:
-            raise NotImplementedError(warning)
+        result = {
+            u'message': warning.message,
+            u'lineno': warning.lineno,
+            u'file': warning.file
+        }
+        if isinstance(warning, TokenWarning):
+            result.update({
+                u'start': warning.start,
+                u'end': warning.end
+            })
+        self.dump(result)
 
     def dump(self, d):
         js = json.dumps(d, ensure_ascii=False, sort_keys=True, indent=4)
@@ -42,25 +45,3 @@ class JSONFormatter(object):
             js = js.decode('utf-8')
         self.output.write(js)
         self.output.write(u'\n')
-
-    def format_line_warning(self, warning):
-        self.dump({
-            u'message': warning.message,
-            u'line': warning.line,
-            u'file': warning.file
-        })
-
-    def format_token_warning(self, warning):
-        self.dump({
-            u'message': warning.message,
-            u'start': warning.start,
-            u'end': warning.end,
-            u'file': warning.file
-        })
-
-    def format_ast_warning(self, warning):
-        self.dump({
-            u'message': warning.message,
-            u'line': warning.line,
-            u'file': warning.file
-        })

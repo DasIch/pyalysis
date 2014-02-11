@@ -133,7 +133,7 @@ class TestImport(ASTAnalyserTest):
         warning = warnings[0]
         assert isinstance(warning, MultipleImports)
         assert warning.message == u'Multiple imports on one line. Should be on separate ones.'
-        assert warning.line == 2
+        assert warning.lineno == 2
         assert warning.file == '<test>'
 
     def test_star_import(self):
@@ -145,5 +145,5 @@ class TestImport(ASTAnalyserTest):
         warning = warnings[0]
         assert isinstance(warning, StarImport)
         assert warning.message == u'from ... import * should be avoided.'
-        assert warning.line == 2
+        assert warning.lineno == 2
         assert warning.file == '<test>'

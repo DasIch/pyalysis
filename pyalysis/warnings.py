@@ -8,23 +8,31 @@
 """
 
 
-class LineWarning(object):
-    def __init__(self, message, line, file):
+class Warning(object):
+    def __init__(self, message, file):
         self.message = message
-        self.line = line
         self.file = file
+
+
+class LineWarning(Warning):
+    def __init__(self, message, lineno, file):
+        Warning.__init__(self, message, file)
+        self.lineno = lineno
 
 
 class LineTooLong(LineWarning):
     pass
 
 
-class TokenWarning(object):
+class TokenWarning(Warning):
     def __init__(self, message, start, end, file):
-        self.message = message
+        Warning.__init__(self, message, file)
         self.start = start
         self.end = end
-        self.file = file
+
+    @property
+    def lineno(self):
+        return self.start[0]
 
 
 class WrongNumberOfIndentationSpaces(TokenWarning):
@@ -35,11 +43,10 @@ class MixedTabsAndSpaces(TokenWarning):
     pass
 
 
-class ASTWarning(object):
-    def __init__(self, message, line, file):
-        self.message = message
-        self.line = line
-        self.file = file
+class ASTWarning(Warning):
+    def __init__(self, message, lineno, file):
+        Warning.__init__(self, message, file)
+        self.lineno = lineno
 
 
 class MultipleImports(ASTWarning):
