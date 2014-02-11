@@ -13,6 +13,8 @@ from pyalysis.ignore.tokens import Name, Location
 from pyalysis.ignore.parser import parse
 from pyalysis.ignore.ast import IgnoreFile, Filter
 from pyalysis.ignore.verifier import verify, IgnoreVerificationWarning
+from pyalysis.ignore.compiler import compile
+from pyalysis.warnings import PrintStatement, DivStatement
 
 
 @pytest.mark.parametrize(('source', 'tokens'), [
@@ -58,3 +60,11 @@ def test_verify(source, filters, warnings, recwarn):
     else:
         with pytest.raises(AssertionError):
             recwarn.pop()
+
+
+@pytest.mark.parametrize(('source', 'warning', 'allowed'), [
+    (u'print-statement', PrintStatement(u'message', '<test>', 1), False),
+    (u'print-statement', DivStatement(u'message', '<test>', 1), True)
+])
+def test_compile(source, warning, allowed):
+    assert compile(verify(parse(lex(source))))(warning) == allowed
