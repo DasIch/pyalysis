@@ -12,7 +12,7 @@ import pytest
 
 from pyalysis.ignore import load_ignore_filter
 from pyalysis.ignore.lexer import lex
-from pyalysis.ignore.tokens import Name, Location
+from pyalysis.ignore.tokens import Name, Location, Newline
 from pyalysis.ignore.parser import parse
 from pyalysis.ignore.ast import IgnoreFile, Filter
 from pyalysis.ignore.verifier import verify, IgnoreVerificationWarning
@@ -24,7 +24,7 @@ from pyalysis.warnings import PrintStatement, DivStatement
     (u'foo', [Name(u'foo', Location(1, 0), Location(1, 3))]),
     (u'foo\nbar', [
         Name(u'foo', Location(1, 0), Location(1, 3)),
-        Name(u'\n', Location(1, 3), Location(2, 0)),
+        Newline(u'\n', Location(1, 3), Location(2, 0)),
         Name(u'bar', Location(2, 0), Location(2, 3))
     ])
 ])
