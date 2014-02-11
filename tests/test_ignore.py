@@ -36,5 +36,4 @@ def test_lexer(source, tokens):
     ]))
 ])
 def test_parser(source, ast):
-    print parse(lex(source), '<test>')
     assert parse(lex(source), '<test>') == ast
