@@ -43,7 +43,8 @@ class LineAnalyser(object):
         if len(line.rstrip()) > 79:
             self.emit(
                 LineTooLong,
-                u'Line is longer than 79 characters. You should keep it below that',
+                u'Line is longer than 79 characters. '
+                u'You should keep it below that',
                 lineno
             )
 
@@ -109,7 +110,8 @@ class TokenAnalyser(object):
         if added_indentation != 4:
             self.emit(
                 WrongNumberOfIndentationSpaces,
-                u'Indented by {0} spaces instead of 4 as demanded by PEP 8'.format(added_indentation),
+                u'Indented by {0} spaces instead of 4 as demanded by PEP 8' \
+                        .format(added_indentation),
                 tok
             )
         self.indentation_stack.append(added_indentation)

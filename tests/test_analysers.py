@@ -65,7 +65,9 @@ class TestIndentation(TokenAnalyserTest):
         assert len(warnings) == 1
         warning = warnings[0]
         assert isinstance(warning, WrongNumberOfIndentationSpaces)
-        assert warning.message == u'Indented by 2 spaces instead of 4 as demanded by PEP 8'
+        assert warning.message == (
+            u'Indented by 2 spaces instead of 4 as demanded by PEP 8'
+        )
         assert warning.start == (3, 0)
         assert warning.end == (3, 2)
 
@@ -82,13 +84,17 @@ class TestIndentation(TokenAnalyserTest):
 
         first = warnings[0]
         assert isinstance(first, WrongNumberOfIndentationSpaces)
-        assert first.message == u'Indented by 2 spaces instead of 4 as demanded by PEP 8'
+        assert first.message == (
+            u'Indented by 2 spaces instead of 4 as demanded by PEP 8'
+        )
         assert first.start == (4, 0)
         assert first.end == (4, 6)
 
         second = warnings[1]
         assert isinstance(second, WrongNumberOfIndentationSpaces)
-        assert second.message == u'Indented by 2 spaces instead of 4 as demanded by PEP 8'
+        assert second.message == (
+            u'Indented by 2 spaces instead of 4 as demanded by PEP 8'
+        )
         assert second.start == (6, 0)
         assert second.end == (6, 6)
 
@@ -136,7 +142,9 @@ class TestImport(ASTAnalyserTest):
         assert len(warnings) == 1
         warning = warnings[0]
         assert isinstance(warning, MultipleImports)
-        assert warning.message == u'Multiple imports on one line. Should be on separate ones.'
+        assert warning.message == (
+            u'Multiple imports on one line. Should be on separate ones.'
+        )
         assert warning.lineno == 2
         assert warning.file == '<test>'
 
