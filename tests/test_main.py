@@ -15,40 +15,54 @@ import pytest
 from pyalysis import __version__
 
 
+def check_output(command):
+    return subprocess.check_output(command).decode('utf-8')
+
+
 def test_version():
-    output = subprocess.check_output(['pyalysis', '--version']).decode('utf-8')
+    output = check_output(['pyalysis', '--version'])
     assert output.strip() == __version__
 
 
 def test_main_successful():
-    output = subprocess.check_output(['pyalysis', __file__]).decode('utf-8')
+    output = check_output(['pyalysis', __file__])
     assert output == u''
 
 
 def test_main_unsuccessful(tmpdir):
     module = os.path.join(str(tmpdir), 'dirty.py')
     with open(module, 'wb') as f:
-        f.write(b'import os, sys\ndef foo():\n  pass')
+        f.write(b'"' + b'x' * 80 + b'"' +
+                b'\nimport os, sys\ndef foo():\n  pass')
     with pytest.raises(subprocess.CalledProcessError) as exc_info:
-        subprocess.check_output(['pyalysis', module])
+        check_output(['pyalysis', module])
     error = exc_info.value
     assert error.returncode == 1
+    print error.output.decode('utf-8')
     assert error.output.decode('utf-8') == textwrap.dedent(u"""\
     {{
+        "file": "{0}", 
+        "line": 1, 
+        "message": "{1}"
+    }}
+    {{
         "end": [
-            3, 
+            4, 
             2
         ], 
         "file": "{0}", 
         "message": "Indented by 2 spaces instead of 4 as demanded by PEP 8", 
         "start": [
-            3, 
+            4, 
             0
         ]
     }}
     {{
         "file": "{0}", 
-        "line": 1, 
+        "line": 2, 
         "message": "Multiple imports on one line. Should be on separate ones."
     }}
-    """.format(module))
+    """.format(
+        module,
+        u'Line is longer than 79 characters. You should keep it below that'
+    ))

@@ -8,7 +8,7 @@
 """
 import json
 
-from pyalysis.warnings import TokenWarning, ASTWarning
+from pyalysis.warnings import LineWarning, TokenWarning, ASTWarning
 from pyalysis._compat import PYPY
 
 
@@ -25,7 +25,9 @@ class JSONFormatter(object):
         """
         Formats a single `warning`.
         """
-        if isinstance(warning, TokenWarning):
+        if isinstance(warning, LineWarning):
+            self.format_line_warning(warning)
+        elif isinstance(warning, TokenWarning):
             self.format_token_warning(warning)
         elif isinstance(warning, ASTWarning):
             self.format_ast_warning(warning)
@@ -40,6 +42,13 @@ class JSONFormatter(object):
             js = js.decode('utf-8')
         self.output.write(js)
         self.output.write(u'\n')
+
+    def format_line_warning(self, warning):
+        self.dump({
+            u'message': warning.message,
+            u'line': warning.line,
+            u'file': warning.file
+        })
 
     def format_token_warning(self, warning):
         self.dump({
