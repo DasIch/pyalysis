@@ -9,13 +9,26 @@
 from abc import ABCMeta
 
 from pyalysis.utils import classproperty
-from pyalysis._compat import with_metaclass
+from pyalysis._compat import with_metaclass, text_type
 
 
 class Warning(object):
-    def __init__(self, message, file):
-        self.message = message
-        self.file = file
+    attributes = [
+        ('message', text_type),
+        ('file', str)
+    ]
+
+    def __init__(self, *args, **kwargs):
+        for (name, _), arg in zip(self.attributes, args):
+            setattr(self, name, arg)
+        for name, arg in kwargs.items():
+            if any(name in (name for (name, _) in self.attributes)):
+                setattr(self, name, arg)
+            else:
+                raise TypeError(
+                    '__init__() got an unexpected keyword argument {!r}' \
+                            .format(name)
+                )
 
 
 class AbstractWarningMeta(ABCMeta):
@@ -44,9 +57,9 @@ class Python3CompatibilityWarning(AbstractWarning):
 
 
 class LineWarning(Warning):
-    def __init__(self, message, lineno, file):
-        Warning.__init__(self, message, file)
-        self.lineno = lineno
+    attributes = Warning.attributes + [
+        ('lineno', int)
+    ]
 
 
 @PEP8Warning.register
@@ -55,7 +68,11 @@ class LineTooLong(LineWarning):
 
 
 class TokenWarning(Warning):
-    def __init__(self, message, start, end, file):
+    attributes = Warning.attributes + [
+        ('lineno', int)
+    ]
+
+    def __init__(self, message, file, start, end):
         Warning.__init__(self, message, file)
         self.start = start
         self.end = end
@@ -75,9 +92,9 @@ class MixedTabsAndSpaces(TokenWarning):
 
 
 class ASTWarning(Warning):
-    def __init__(self, message, lineno, file):
-        Warning.__init__(self, message, file)
-        self.lineno = lineno
+    attributes = Warning.attributes + [
+        ('lineno', int)
+    ]
 
 
 @PEP8Warning.register

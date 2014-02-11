@@ -17,8 +17,8 @@ class TestJSONFormatter(object):
     def test_token_warning(self):
         output = StringIO()
         formatter = JSONFormatter(output)
-        formatter.format(TokenWarning(u'a message', (1, 0), (1, 10), '<test>'))
-        formatter.format(TokenWarning(u'b message', (2, 0), (2, 20), '<test>'))
+        formatter.format(TokenWarning(u'a message', '<test>', (1, 0), (1, 10)))
+        formatter.format(TokenWarning(u'b message', '<test>', (2, 0), (2, 20)))
         assert output.getvalue() == textwrap.dedent(u"""\
         {
             "end": [

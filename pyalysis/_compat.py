@@ -16,6 +16,12 @@ except ImportError:
 PY2 = sys.version_info[0] == 2
 
 
+if PY2:
+    text_type = unicode
+else:
+    text_type = str
+
+
 # copied from Flask: flask/_compat.py
 #                    copyright 2014 by Armin Ronacher
 #                    licensed under BSD

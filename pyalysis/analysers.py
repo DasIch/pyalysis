@@ -32,7 +32,7 @@ class LineAnalyser(object):
         self.warnings = []
 
     def emit(self, warning_cls, message, lineno):
-        self.warnings.append(warning_cls(message, lineno, self.module.name))
+        self.warnings.append(warning_cls(message, self.module.name, lineno))
 
     def analyse(self):
         reader = codecs.lookup(self.encoding).streamreader(self.module)
@@ -70,7 +70,7 @@ class TokenAnalyser(object):
         information in `tok`.
         """
         self.warnings.append(
-            warning_cls(message, tok.start, tok.end, self.module.name)
+            warning_cls(message, self.module.name, tok.start, tok.end)
         )
 
     def generate_tokens(self):
@@ -154,7 +154,7 @@ class ASTAnalyser(object):
         information in `node` and appends it to :attr:`warnings`.
         """
         self.warnings.append(
-            warning_cls(message, node.lineno, self.module.name)
+            warning_cls(message, self.module.name, node.lineno)
         )
 
     def analyse(self):
