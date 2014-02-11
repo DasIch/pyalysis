@@ -187,10 +187,13 @@ class ASTAnalyser(object):
                 node
             )
 
-    def analyse_node_TryExcept(self, node):
+    def analyse_node_Try(self, node):
         if len(node.handlers) == 1 and node.handlers[0].type is None:
             self.emit(
                 IndiscriminateExcept,
                 u'Never use except without a specific exception.',
                 node.handlers[0]
             )
+    if PY2:
+        analyse_node_TryExcept = analyse_node_Try
+        analyse_node_TryExcept.__name__ = 'analyse_node_TryExcept'
