@@ -9,11 +9,14 @@
 import textwrap
 from io import BytesIO
 
+import pytest
+
 from pyalysis.analysers import LineAnalyser, TokenAnalyser, ASTAnalyser
 from pyalysis.warnings import (
     WrongNumberOfIndentationSpaces, MixedTabsAndSpaces, MultipleImports,
-    StarImport, IndiscriminateExcept, GlobalKeyword
+    StarImport, IndiscriminateExcept, GlobalKeyword, PrintStatement
 )
+from pyalysis._compat import PY2
 
 
 class LineAnalyserTest(object):
@@ -192,4 +195,30 @@ class TestGlobalKeyword(ASTAnalyserTest):
         assert isinstance(warning, GlobalKeyword)
         assert warning.message == u'The global keyword should be avoided.'
         assert warning.lineno == 3
-        assert warning.file == u'<test>'
+        assert warning.file == '<test>'
+
+
+class TestPrintStatement(ASTAnalyserTest):
+    @pytest.mark.skipif(not PY2, reason='removed in Python 3')
+    def test(self):
+        source = u"""
+        print "foo"
+        """
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, PrintStatement)
+        assert warning.message == (
+            u'The print statement has been removed in Python 3. Import '
+            u'print() with from __future__ import print_function instead.'
+        )
+        assert warning.lineno == 2
+        assert warning.file == '<test>'
+
+    def test_future_works(self):
+        source = u"""
+        from __future__ import print_function
+        print("foo")
+        """
+        warnings = self.analyse_source(source)
+        assert not warnings

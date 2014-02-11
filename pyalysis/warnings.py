@@ -63,3 +63,7 @@ class IndiscriminateExcept(ASTWarning):
 
 class GlobalKeyword(ASTWarning):
     pass
+
+
+class PrintStatement(ASTWarning):
+    pass

@@ -14,7 +14,8 @@ from collections import namedtuple
 
 from pyalysis.warnings import (
     LineTooLong, WrongNumberOfIndentationSpaces, MixedTabsAndSpaces,
-    MultipleImports, StarImport, IndiscriminateExcept, GlobalKeyword
+    MultipleImports, StarImport, IndiscriminateExcept, GlobalKeyword,
+    PrintStatement
 )
 from pyalysis.utils import detect_encoding
 from pyalysis._compat import PY2
@@ -202,5 +203,13 @@ class ASTAnalyser(object):
         self.emit(
             GlobalKeyword,
             u'The global keyword should be avoided.',
+            node
+        )
+
+    def analyse_node_Print(self, node):
+        self.emit(
+            PrintStatement,
+            u'The print statement has been removed in Python 3. Import '
+            u'print() with from __future__ import print_function instead.',
             node
         )
