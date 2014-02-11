@@ -10,6 +10,8 @@ import pytest
 
 from pyalysis.ignore.lexer import lex
 from pyalysis.ignore.tokens import Name, Location
+from pyalysis.ignore.parser import parse
+from pyalysis.ignore.ast import IgnoreFile, Filter
 
 
 @pytest.mark.parametrize(('source', 'tokens'), [
@@ -22,3 +24,17 @@ from pyalysis.ignore.tokens import Name, Location
 ])
 def test_lexer(source, tokens):
     assert list(lex(source)) == tokens
+
+
+@pytest.mark.parametrize(('source', 'ast'), [
+    (u'foo', IgnoreFile('<test>', [
+        Filter(u'foo', Location(1, 0), Location(1, 3))
+    ])),
+    (u'foo\nbar', IgnoreFile('<test>', [
+        Filter(u'foo', Location(1, 0), Location(1, 3)),
+        Filter(u'bar', Location(2, 0), Location(2, 3))
+    ]))
+])
+def test_parser(source, ast):
+    print parse(lex(source), '<test>')
+    assert parse(lex(source), '<test>') == ast
