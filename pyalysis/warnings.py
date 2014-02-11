@@ -67,3 +67,7 @@ class GlobalKeyword(ASTWarning):
 
 class PrintStatement(ASTWarning):
     pass
+
+
+class DivStatement(ASTWarning):
+    pass

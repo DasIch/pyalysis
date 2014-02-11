@@ -14,7 +14,8 @@ import pytest
 from pyalysis.analysers import LineAnalyser, TokenAnalyser, ASTAnalyser
 from pyalysis.warnings import (
     WrongNumberOfIndentationSpaces, MixedTabsAndSpaces, MultipleImports,
-    StarImport, IndiscriminateExcept, GlobalKeyword, PrintStatement
+    StarImport, IndiscriminateExcept, GlobalKeyword, PrintStatement,
+    DivStatement
 )
 from pyalysis._compat import PY2
 
@@ -219,6 +220,28 @@ class TestPrintStatement(ASTAnalyserTest):
         source = u"""
         from __future__ import print_function
         print("foo")
+        """
+        warnings = self.analyse_source(source)
+        assert not warnings
+
+
+class TestDivStatement(ASTAnalyserTest):
+    def test(self):
+        source = u"""
+        1 / 1
+        """
+        warnings = self.analyse_source(source)
+        if PY2:
+            assert len(warnings) == 1
+            warning = warnings[0]
+            assert isinstance(warning, DivStatement)
+        else:
+            assert not warnings
+
+    def test_future_works(self):
+        source = u"""
+        from __future__ import division
+        1 / 1
         """
         warnings = self.analyse_source(source)
         assert not warnings

@@ -15,7 +15,7 @@ from collections import namedtuple
 from pyalysis.warnings import (
     LineTooLong, WrongNumberOfIndentationSpaces, MixedTabsAndSpaces,
     MultipleImports, StarImport, IndiscriminateExcept, GlobalKeyword,
-    PrintStatement
+    PrintStatement, DivStatement
 )
 from pyalysis.utils import detect_encoding
 from pyalysis._compat import PY2
@@ -146,6 +146,8 @@ class ASTAnalyser(object):
         self.ast = ast.parse(module.read(), module.name)
         self.warnings = []
 
+        self.div_is_floor_on_int = PY2
+
     def emit(self, warning_cls, message, node):
         """
         Creates an instance of `warning_cls` using the given `message` and the
@@ -187,6 +189,9 @@ class ASTAnalyser(object):
                 u'from ... import * should be avoided.',
                 node
             )
+        if node.module == u'__future__':
+            if any(alias.name == u'division' for alias in node.names):
+                self.div_is_floor_on_int = False
 
     def analyse_node_Try(self, node):
         if len(node.handlers) == 1 and node.handlers[0].type is None:
@@ -213,3 +218,12 @@ class ASTAnalyser(object):
             u'print() with from __future__ import print_function instead.',
             node
         )
+
+    def analyse_node_BinOp(self, node):
+        if isinstance(node.op, ast.Div) and self.div_is_floor_on_int:
+            self.emit(
+                DivStatement,
+                u'Don\'t use / without from __future__ import division. Use '
+                u'//, if you really want floor division.',
+                node
+            )
