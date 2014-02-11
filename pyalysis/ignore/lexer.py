@@ -13,7 +13,7 @@ from pyalysis.ignore.tokens import Location, Name, Newline
 
 TOKEN_DEFINITIONS = [
     (re.compile(regex), token_cls) for regex, token_cls in [
-        (r'[a-zA-Z][a-zA-Z\-]*', Name),
+        (r'[a-zA-Z][a-zA-Z0-9\-]*', Name),
         (r'\n', Newline)
     ]
 ]
