@@ -55,3 +55,7 @@ class MultipleImports(ASTWarning):
 
 class StarImport(ASTWarning):
     pass
+
+
+class IndiscriminateExcept(ASTWarning):
+    pass

@@ -14,7 +14,7 @@ from collections import namedtuple
 
 from pyalysis.warnings import (
     LineTooLong, WrongNumberOfIndentationSpaces, MixedTabsAndSpaces,
-    MultipleImports, StarImport
+    MultipleImports, StarImport, IndiscriminateExcept
 )
 from pyalysis.utils import detect_encoding
 from pyalysis._compat import PY2
@@ -185,4 +185,12 @@ class ASTAnalyser(object):
                 StarImport,
                 u'from ... import * should be avoided.',
                 node
+            )
+
+    def analyse_node_TryExcept(self, node):
+        if len(node.handlers) == 1 and node.handlers[0].type is None:
+            self.emit(
+                IndiscriminateExcept,
+                u'Never use except without a specific exception.',
+                node.handlers[0]
             )

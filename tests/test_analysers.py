@@ -12,7 +12,7 @@ from io import BytesIO
 from pyalysis.analysers import LineAnalyser, TokenAnalyser, ASTAnalyser
 from pyalysis.warnings import (
     WrongNumberOfIndentationSpaces, MixedTabsAndSpaces, MultipleImports,
-    StarImport
+    StarImport, IndiscriminateExcept
 )
 
 
@@ -158,4 +158,23 @@ class TestImport(ASTAnalyserTest):
         assert isinstance(warning, StarImport)
         assert warning.message == u'from ... import * should be avoided.'
         assert warning.lineno == 2
+        assert warning.file == '<test>'
+
+
+class TestExcept(ASTAnalyserTest):
+    def test(self):
+        source = u"""
+        try:
+            foo
+        except:
+            pass
+        """
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, IndiscriminateExcept)
+        assert warning.message == (
+            u'Never use except without a specific exception.'
+        )
+        assert warning.lineno == 4
         assert warning.file == '<test>'
