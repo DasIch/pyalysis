@@ -8,7 +8,7 @@
 """
 from abc import ABCMeta
 
-from pyalysis.utils import classproperty
+from pyalysis.utils import classproperty, iter_subclasses
 from pyalysis._compat import with_metaclass, text_type
 
 
@@ -122,3 +122,15 @@ class PrintStatement(ASTWarning):
 @Python3CompatibilityWarning.register
 class DivStatement(ASTWarning):
     type = 'div-statement'
+
+
+def _create_warnings_mapping():
+    warnings = {}
+    for warning_super_cls in [Warning, AbstractWarning]:
+        for warning_cls in iter_subclasses(warning_super_cls):
+            if hasattr(warning_cls, 'type'):
+                warnings[warning_cls.type] = warning_cls
+    return warnings
+
+
+WARNINGS = _create_warnings_mapping()

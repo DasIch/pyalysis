@@ -12,6 +12,7 @@ from pyalysis.ignore.lexer import lex
 from pyalysis.ignore.tokens import Name, Location
 from pyalysis.ignore.parser import parse
 from pyalysis.ignore.ast import IgnoreFile, Filter
+from pyalysis.ignore.verifier import verify, IgnoreVerificationWarning
 
 
 @pytest.mark.parametrize(('source', 'tokens'), [
@@ -37,3 +38,23 @@ def test_lexer(source, tokens):
 ])
 def test_parser(source, ast):
     assert parse(lex(source), '<test>') == ast
+
+
+@pytest.mark.parametrize(('source', 'filters', 'warnings'), [
+    (u'pep8', [Filter(u'pep8', Location(1, 0), Location(1, 4))], []),
+    (u'foo', [], [
+        IgnoreVerificationWarning(
+            u'Ignoring filter with unknown warning type: "foo" in line 1.'
+        )
+    ])
+])
+def test_verify(source, filters, warnings, recwarn):
+    assert list(verify(parse(lex(source)))) == filters
+    if warnings:
+        for warning in warnings:
+            received_warning = recwarn.pop()
+            assert isinstance(warning, received_warning.category)
+            assert received_warning.message.args == warning.args
+    else:
+        with pytest.raises(AssertionError):
+            recwarn.pop()

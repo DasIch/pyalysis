@@ -52,3 +52,10 @@ class classproperty(object):
 
     def __get__(self, instance, owner):
         return self.fget(owner)
+
+
+def iter_subclasses(cls):
+    for subclass in cls.__subclasses__():
+        for subsubclass in iter_subclasses(subclass):
+            yield subsubclass
+    yield cls
