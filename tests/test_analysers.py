@@ -12,7 +12,7 @@ from io import BytesIO
 from pyalysis.analysers import LineAnalyser, TokenAnalyser, ASTAnalyser
 from pyalysis.warnings import (
     WrongNumberOfIndentationSpaces, MixedTabsAndSpaces, MultipleImports,
-    StarImport, IndiscriminateExcept
+    StarImport, IndiscriminateExcept, GlobalKeyword
 )
 
 
@@ -178,3 +178,18 @@ class TestExcept(ASTAnalyserTest):
         )
         assert warning.lineno == 4
         assert warning.file == '<test>'
+
+
+class TestGlobalKeyword(ASTAnalyserTest):
+    def test(self):
+        source = u"""
+        def foo():
+            global spam
+        """
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, GlobalKeyword)
+        assert warning.message == u'The global keyword should be avoided.'
+        assert warning.lineno == 3
+        assert warning.file == u'<test>'

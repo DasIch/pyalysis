@@ -14,7 +14,7 @@ from collections import namedtuple
 
 from pyalysis.warnings import (
     LineTooLong, WrongNumberOfIndentationSpaces, MixedTabsAndSpaces,
-    MultipleImports, StarImport, IndiscriminateExcept
+    MultipleImports, StarImport, IndiscriminateExcept, GlobalKeyword
 )
 from pyalysis.utils import detect_encoding
 from pyalysis._compat import PY2
@@ -197,3 +197,10 @@ class ASTAnalyser(object):
     if PY2:
         analyse_node_TryExcept = analyse_node_Try
         analyse_node_TryExcept.__name__ = 'analyse_node_TryExcept'
+
+    def analyse_node_Global(self, node):
+        self.emit(
+            GlobalKeyword,
+            u'The global keyword should be avoided.',
+            node
+        )

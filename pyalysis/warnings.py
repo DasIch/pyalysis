@@ -59,3 +59,7 @@ class StarImport(ASTWarning):
 
 class IndiscriminateExcept(ASTWarning):
     pass
+
+
+class GlobalKeyword(ASTWarning):
+    pass
