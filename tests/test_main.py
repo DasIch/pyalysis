@@ -38,7 +38,6 @@ def test_main_unsuccessful(tmpdir):
         check_output(['pyalysis', module])
     error = exc_info.value
     assert error.returncode == 1
-    print error.output.decode('utf-8')
     assert error.output.decode('utf-8') == textwrap.dedent(u"""\
     {{
         "file": "{0}", 
