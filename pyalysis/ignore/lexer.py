@@ -3,7 +3,7 @@
     pyalysis.ignore.lexer
     ~~~~~~~~~~~~~~~~~~~~~
 
-    :copyright: 2014 by Daniel Neuhäuser
+    :copyright: 2014 by Daniel Neuhäuser and Contributors
     :license: BSD, see LICENSE.rst for details
 """
 import re
