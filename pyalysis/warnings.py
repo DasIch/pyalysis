@@ -39,6 +39,10 @@ class PEP8Warning(AbstractWarning):
     type = 'pep8'
 
 
+class Python3CompatibilityWarning(AbstractWarning):
+    type = 'python3-compatibility'
+
+
 class LineWarning(Warning):
     def __init__(self, message, lineno, file):
         Warning.__init__(self, message, file)
@@ -93,9 +97,11 @@ class GlobalKeyword(ASTWarning):
     type = 'global-keyword'
 
 
+@Python3CompatibilityWarning.register
 class PrintStatement(ASTWarning):
     type = 'print-statement'
 
 
+@Python3CompatibilityWarning.register
 class DivStatement(ASTWarning):
     type = 'div-statement'
