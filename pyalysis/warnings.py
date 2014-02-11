@@ -6,6 +6,10 @@
     :copyright: 2014 by Daniel Neuhäuser and Contributors
     :license: BSD, see LICENSE.rst for details
 """
+from abc import ABCMeta
+
+from pyalysis.utils import classproperty
+from pyalysis._compat import with_metaclass
 
 
 class Warning(object):
@@ -14,12 +18,34 @@ class Warning(object):
         self.file = file
 
 
+class AbstractWarningMeta(ABCMeta):
+    def __init__(self, name, bases, attributes):
+        ABCMeta.__init__(self, name, bases, attributes)
+        self.warnings = set()
+
+    def register(self, subclass):
+        ABCMeta.register(self, subclass)
+        self.warnings.add(subclass)
+        return subclass
+
+
+class AbstractWarning(with_metaclass(AbstractWarningMeta)):
+    @classproperty
+    def types(cls):
+        return {cls.type for cls in cls.mro() if hasattr(cls, 'type')}
+
+
+class PEP8Warning(AbstractWarning):
+    type = 'pep8'
+
+
 class LineWarning(Warning):
     def __init__(self, message, lineno, file):
         Warning.__init__(self, message, file)
         self.lineno = lineno
 
 
+@PEP8Warning.register
 class LineTooLong(LineWarning):
     type = 'line-too-long'
 
@@ -35,6 +61,7 @@ class TokenWarning(Warning):
         return self.start[0]
 
 
+@PEP8Warning.register
 class WrongNumberOfIndentationSpaces(TokenWarning):
     type = 'wrong-number-of-indentation-spaces'
 
@@ -49,6 +76,7 @@ class ASTWarning(Warning):
         self.lineno = lineno
 
 
+@PEP8Warning.register
 class MultipleImports(ASTWarning):
     type = 'multiple-imports'
 
