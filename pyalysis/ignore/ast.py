@@ -108,6 +108,21 @@ class BinaryOperation(Node):
         self.left = left
         self.right = right
 
+    @property
+    def name(self):
+        if isinstance(self.left, Name):
+            return self.left
+        elif isinstance(self.right, Name):
+            return self.right
+
+    @property
+    def literal(self):
+        if isinstance(self.left, Name) and isinstance(self.right, Name):
+            return None
+        if isinstance(self.left, Name):
+            return self.right
+        return self.left
+
     def __eq__(self, other):
         parent_equal = Node.__eq__(self, other)
         if parent_equal is NotImplemented:

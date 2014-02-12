@@ -6,8 +6,10 @@
     :copyright: 2014 by Daniel Neuhäuser and Contributors
     :license: BSD, see LICENSE.rst for details
 """
+import operator
+
 from pyalysis.warnings import WARNINGS
-from pyalysis.ignore.ast import Equal, Name, String, LessThan, GreaterThan
+from pyalysis.ignore.ast import BinaryOperation, Equal, LessThan, GreaterThan
 
 
 def compile(filters):
@@ -31,41 +33,18 @@ def compile_expressions(expressions):
 
 
 def compile_expression(expression):
-    compile = {
-        Equal: compile_equal,
-        LessThan: compile_less_than,
-        GreaterThan: compile_greater_than
-    }.get(expression.__class__)
-    if compile is None:
-        raise NotImplementedError(expression)
-    return compile(expression)
+    if isinstance(expression, BinaryOperation):
+        return compile_binary_operation(expression)
+    raise NotImplementedError(expression)
 
 
-def compile_equal(equal):
-    if isinstance(equal.left, Name):
-        name = equal.left.name
-        value = equal.right.value
-    else:
-        name = equal.right.name
-        value = equal.left.value
-    return lambda warning: getattr(warning, name) == value
-
-
-def compile_less_than(less_than):
-    if isinstance(less_than.left, Name):
-        name = less_than.left.name
-        value = less_than.right.value
-    else:
-        name = less_than.right.name
-        value = less_than.left.value
-    return lambda warning: getattr(warning, name) < value
-
-
-def compile_greater_than(greater_than):
-    if isinstance(greater_than.left, Name):
-        name = greater_than.left.name
-        value = greater_than.right.value
-    else:
-        name = greater_than.right.name
-        value = greater_than.left.value
-    return lambda warning: getattr(warning, name) > value
+def compile_binary_operation(operation):
+    op = {
+        Equal: operator.eq,
+        LessThan: operator.lt,
+        GreaterThan: operator.gt
+    }[operation.__class__]
+    return lambda warning: op(
+        getattr(warning, operation.name.name),
+        operation.literal.value
+    )

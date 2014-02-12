@@ -56,7 +56,7 @@ def verify_binary_operation(warning, operation):
         LessThan: u'less than',
         GreaterThan: u'greater than'
     }[operation.__class__]
-    if isinstance(operation.left, Name) and isinstance(operation.right, Name):
+    if operation.literal is None:
         warnings.warn(
             (
                 u'Ignoring {} expression with missing constant in line '
@@ -65,11 +65,7 @@ def verify_binary_operation(warning, operation):
             IgnoreVerificationWarning
         )
         return False
-    has_name = (
-        isinstance(operation.left, Name) or
-        isinstance(operation.right, Name)
-    )
-    if not has_name:
+    if operation.name is None:
         warnings.warn(
             (
                 u'Ignoring {} expression with missing name in line '
@@ -78,19 +74,13 @@ def verify_binary_operation(warning, operation):
             IgnoreVerificationWarning
         )
         return False
-    if isinstance(operation.left, Name):
-        name_node = operation.left
-        literal_node = operation.right
-    else:
-        name_node = operation.right
-        literal_node = operation.left
-    if name_node.name not in (name for (name, _) in warning.attributes):
+    if operation.name.name not in (name for (name, _) in warning.attributes):
         warnings.warn(
             (
                 u'Ignoring {} expression with "{}". "{}" doesn\'t have '
                 u'such an attribute to compare to. Line {}.'
             ).format(
-                operation_name, name_node.name, warning.type,
+                operation_name, operation.name.name, warning.type,
                 operation.start.line
             ),
             IgnoreVerificationWarning
@@ -98,19 +88,19 @@ def verify_binary_operation(warning, operation):
         return False
 
     attribute_type = next(
-        type for (n, type) in warning.attributes if n == name_node.name
+        type for (n, type) in warning.attributes if n == operation.name.name
     )
     literal_type, literal_type_name = {
         String: (text_type, u'string'),
         Integer: (int, u'integer')
-    }[literal_node.__class__]
+    }[operation.literal.__class__]
     if not issubclass(literal_type, attribute_type):
         warnings.warn(
             (
                 u'Ignoring {} expression in line {}. "{}" is not of type '
                 u'{}.'
             ).format(
-                operation_name, operation.start.line, name_node.name,
+                operation_name, operation.start.line, operation.name.name,
                 literal_type_name
             )
         )
