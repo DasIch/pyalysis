@@ -125,3 +125,7 @@ class Equal(BinaryOperation):
 
 class LessThan(BinaryOperation):
     pass
+
+
+class GreaterThan(BinaryOperation):
+    pass

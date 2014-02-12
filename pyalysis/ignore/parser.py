@@ -70,7 +70,8 @@ def parse_expression(token_stream):
                 )
     return {
         u'=': ast.Equal,
-        u'<': ast.LessThan
+        u'<': ast.LessThan,
+        u'>': ast.GreaterThan
     }[operator.lexeme](left, right, left.start, right.end)
 
 

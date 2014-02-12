@@ -53,6 +53,15 @@ from pyalysis._compat import text_type
         tokens.Operator(u'<', Location(2, 9), Location(2, 10)),
         tokens.Integer(u'1', Location(2, 11), Location(2, 12)),
         tokens.Dedent(u'', Location(2, 12), Location(2, 12))
+    ]),
+    (u'foo\n    spam > 1', [
+        tokens.Name(u'foo', Location(1, 0), Location(1, 3)),
+        tokens.Newline(u'\n', Location(1, 3), Location(2, 0)),
+        tokens.Indent(u'    ', Location(2, 0), Location(2, 4)),
+        tokens.Name(u'spam', Location(2, 4), Location(2, 8)),
+        tokens.Operator(u'>', Location(2, 9), Location(2, 10)),
+        tokens.Integer(u'1', Location(2, 11), Location(2, 12)),
+        tokens.Dedent(u'', Location(2, 12), Location(2, 12))
     ])
 ])
 def test_lexer(source, tokens):
@@ -102,6 +111,21 @@ def test_lexer(source, tokens):
             u'foo',
             [
                 ast.LessThan(
+                    ast.Name(u'spam', Location(2, 4), Location(2, 8)),
+                    ast.Integer(1, Location(2, 11), Location(2, 12)),
+                    Location(2, 4),
+                    Location(2, 12)
+                )
+            ],
+            Location(1, 0),
+            Location(2, 12)
+        )
+    ])),
+    (u'foo\n    spam > 1', ast.IgnoreFile('<test>', [
+        ast.Filter(
+            u'foo',
+            [
+                ast.GreaterThan(
                     ast.Name(u'spam', Location(2, 4), Location(2, 8)),
                     ast.Integer(1, Location(2, 11), Location(2, 12)),
                     Location(2, 4),
@@ -287,6 +311,20 @@ class TestVerifyLessThan(BinaryOperationVerifyTest):
         return request.param
 
 
+class TestVerifyGreaterThan(BinaryOperationVerifyTest):
+    @pytest.fixture
+    def operation(self):
+        return u'>'
+
+    @pytest.fixture
+    def operation_name(self):
+        return u'greater than'
+
+    @pytest.fixture(params=[int])
+    def supported_type(self, request):
+        return request.param
+
+
 
 @pytest.mark.parametrize(('source', 'warning', 'allowed'), [
     (u'print-statement', PrintStatement(u'message', '<test>', 1), False),
@@ -325,6 +363,16 @@ class TestVerifyLessThan(BinaryOperationVerifyTest):
         u'print-statement \n lineno < 3',
         PrintStatement(u'foo', '<test>', 3),
         True
+    ),
+    (
+        u'print-statement \n lineno > 1',
+        PrintStatement(u'foo', '<test>', 1),
+        True
+    ),
+    (
+        u'print-statement \n lineno > 1',
+        PrintStatement(u'foo', '<test>', 2),
+        False
     )
 ])
 def test_compile(source, warning, allowed):

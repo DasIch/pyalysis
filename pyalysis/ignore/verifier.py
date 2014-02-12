@@ -10,7 +10,7 @@ import warnings
 
 from pyalysis.warnings import WARNINGS
 from pyalysis.ignore.ast import (
-    Equal, Name, String, Integer, BinaryOperation, LessThan
+    Equal, Name, String, Integer, BinaryOperation, LessThan, GreaterThan
 )
 from pyalysis._compat import text_type
 
@@ -53,7 +53,8 @@ def verify_expression(warning, expression):
 def verify_binary_operation(warning, operation):
     operation_name = {
         Equal: u'equal',
-        LessThan: u'less than'
+        LessThan: u'less than',
+        GreaterThan: u'greater than'
     }[operation.__class__]
     if isinstance(operation.left, Name) and isinstance(operation.right, Name):
         warnings.warn(
