@@ -1,6 +1,9 @@
 Pyalysis
 ========
 
+.. image:: https://travis-ci.org/DasIch/pyalysis.png
+   :target: https://travis-ci.org/DasIch/pyalysis
+
 Pyalysis provides static Python analysis of style guide violations and
 possible errors.
 
