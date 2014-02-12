@@ -7,7 +7,7 @@
     :license: BSD, see LICENSE.rst for details
 """
 from pyalysis.warnings import WARNINGS
-from pyalysis.ignore.ast import Equal, Name, String
+from pyalysis.ignore.ast import Equal, Name, String, LessThan
 
 
 def compile(filters):
@@ -33,6 +33,10 @@ def compile_expressions(expressions):
 def compile_expression(expression):
     if isinstance(expression, Equal):
         return compile_equal(expression)
+    elif isinstance(expression, LessThan):
+        return compile_less_than(expression)
+    else:
+        raise NotImplementedError(expression)
 
 
 def compile_equal(equal):
@@ -43,3 +47,13 @@ def compile_equal(equal):
         name = equal.right.name
         value = equal.left.value
     return lambda warning: getattr(warning, name) == value
+
+
+def compile_less_than(less_than):
+    if isinstance(less_than.left, Name):
+        name = less_than.left.name
+        value = less_than.right.value
+    else:
+        name = less_than.right.name
+        value = less_than.left.value
+    return lambda warning: getattr(warning, name) < value

@@ -121,3 +121,7 @@ class BinaryOperation(Node):
 
 class Equal(BinaryOperation):
     pass
+
+
+class LessThan(BinaryOperation):
+    pass

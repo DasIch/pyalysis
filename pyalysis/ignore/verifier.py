@@ -9,7 +9,9 @@
 import warnings
 
 from pyalysis.warnings import WARNINGS
-from pyalysis.ignore.ast import Equal, Name, String, Integer
+from pyalysis.ignore.ast import (
+    Equal, Name, String, Integer, BinaryOperation, LessThan
+)
 from pyalysis._compat import text_type
 
 
@@ -44,55 +46,72 @@ def verify_filter(filter):
 
 
 def verify_expression(warning, expression):
-    if isinstance(expression, Equal):
-        return verify_equal(warning, expression)
+    if isinstance(expression, BinaryOperation):
+        return verify_binary_operation(warning, expression)
 
 
-def verify_equal(warning, equal):
-    if isinstance(equal.left, Name) and isinstance(equal.right, Name):
+def verify_binary_operation(warning, operation):
+    operation_name = {
+        Equal: u'equal',
+        LessThan: u'less than'
+    }[operation.__class__]
+    if isinstance(operation.left, Name) and isinstance(operation.right, Name):
         warnings.warn(
             (
-                u'Ignoring equal expression with missing constant in line '
+                u'Ignoring {} expression with missing constant in line '
                 u'{}.'
-            ).format(equal.start.line),
+            ).format(operation_name, operation.start.line),
             IgnoreVerificationWarning
         )
         return False
-    elif not (isinstance(equal.left, Name) or isinstance(equal.right, Name)):
+    has_name = (
+        isinstance(operation.left, Name) or
+        isinstance(operation.right, Name)
+    )
+    if not has_name:
         warnings.warn(
             (
-                u'Ignoring equal expression with missing name in line '
+                u'Ignoring {} expression with missing name in line '
                 u'{}.'
-            ).format(equal.start.line),
+            ).format(operation_name, operation.start.line),
             IgnoreVerificationWarning
         )
         return False
-    name_node = equal.left if isinstance(equal.left, Name) else equal.right
+    if isinstance(operation.left, Name):
+        name_node = operation.left
+        literal_node = operation.right
+    else:
+        name_node = operation.right
+        literal_node = operation.left
     if name_node.name not in (name for (name, _) in warning.attributes):
         warnings.warn(
             (
-                u'Ignoring equal expression with "{}". "{}" doesn\'t have '
+                u'Ignoring {} expression with "{}". "{}" doesn\'t have '
                 u'such an attribute to compare to. Line {}.'
-            ).format(name_node.name, warning.type, equal.start.line),
+            ).format(
+                operation_name, name_node.name, warning.type,
+                operation.start.line
+            ),
             IgnoreVerificationWarning
         )
         return False
 
-    type_node = equal.right if isinstance(equal.left, Name) else equal.left
     attribute_type = next(
         type for (n, type) in warning.attributes if n == name_node.name
     )
-    if isinstance(type_node, String):
-        comparision_type = text_type
-        type_name = u'string'
-    elif isinstance(type_node, Integer):
-        comparision_type = int
-        type_name = u'integer'
-    if not issubclass(comparision_type, attribute_type):
+    literal_type, literal_type_name = {
+        String: (text_type, u'string'),
+        Integer: (int, u'integer')
+    }[literal_node.__class__]
+    if not issubclass(literal_type, attribute_type):
         warnings.warn(
-            u'Ignoring equal expression in line {}. "{}" is not of type '
-            u'{}.' \
-                .format(equal.start.line, name_node.name, type_name)
+            (
+                u'Ignoring {} expression in line {}. "{}" is not of type '
+                u'{}.'
+            ).format(
+                operation_name, operation.start.line, name_node.name,
+                literal_type_name
+            )
         )
         return False
     return True
