@@ -42,8 +42,35 @@ class IgnoreFile(Node):
         if self.filters:
             return self.filters[-1].end
 
+    def __eq__(self, other):
+        parent_equal = Node.__eq__(self, other)
+        if parent_equal is NotImplemented:
+            return NotImplemented
+        return (
+            parent_equal and
+            self.filename == other.filename and
+            self.filters == other.filters
+        )
+
 
 class Filter(Node):
+    def __init__(self, name, expressions, start, end):
+        Node.__init__(self, start, end)
+        self.name = name
+        self.expressions = expressions
+
+    def __eq__(self, other):
+        parent_equal = Node.__eq__(self, other)
+        if parent_equal is NotImplemented:
+            return NotImplemented
+        return (
+            parent_equal and
+            self.name == other.name and
+            self.expressions == other.expressions
+        )
+
+
+class Name(Node):
     def __init__(self, name, start, end):
         Node.__init__(self, start, end)
         self.name = name
@@ -53,3 +80,36 @@ class Filter(Node):
         if parent_equal is NotImplemented:
             return NotImplemented
         return parent_equal and self.name == other.name
+
+
+class String(Node):
+    def __init__(self, value, start, end):
+        Node.__init__(self, start, end)
+        self.value = value
+
+    def __eq__(self, other):
+        parent_equal = Node.__eq__(self, other)
+        if parent_equal is NotImplemented:
+            return NotImplemented
+        return parent_equal and self.value == other.value
+
+
+class BinaryOperation(Node):
+    def __init__(self, left, right, start, end):
+        Node.__init__(self, start, end)
+        self.left = left
+        self.right = right
+
+    def __eq__(self, other):
+        parent_equal = Node.__eq__(self, other)
+        if parent_equal is NotImplemented:
+            return NotImplemented
+        return (
+            parent_equal and
+            self.left == other.left and
+            self.right == other.right
+        )
+
+
+class Equal(BinaryOperation):
+    pass

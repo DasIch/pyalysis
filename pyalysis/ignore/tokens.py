@@ -38,3 +38,19 @@ class Name(Token):
 
 class Newline(Token):
     pass
+
+
+class Indent(Token):
+    pass
+
+
+class Dedent(Token):
+    pass
+
+
+class Operator(Token):
+    pass
+
+
+class String(Token):
+    pass

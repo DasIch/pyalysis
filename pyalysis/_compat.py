@@ -18,8 +18,17 @@ PY2 = sys.version_info[0] == 2
 
 if PY2:
     text_type = unicode
+
+    def implements_iterator(cls):
+        cls.next = cls.__next__
+        del cls.__next__
+        return cls
+
 else:
     text_type = str
+
+    def implements_iterator(cls):
+        return cls
 
 
 # copied from Flask: flask/_compat.py
