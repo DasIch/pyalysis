@@ -74,11 +74,19 @@ def parse_expression(token_stream):
 
 
 def parse_literal(token_stream):
-    token = expect((tokens.Name, tokens.String), token_stream)
+    token = next(token_stream)
     if isinstance(token, tokens.Name):
         return ast.Name(token.lexeme, token.start, token.end)
-    else:
+    elif isinstance(token, tokens.String):
         return ast.String(token.lexeme[1:-1], token.start, token.end)
+    elif isinstance(token, tokens.Integer):
+        return ast.Integer(int(token.lexeme), token.start, token.end)
+    else:
+        raise ParsingError(
+            u'got an unexpected token {} at line {}, column {}'.format(
+                token, token.start.line, token.start.column
+            )
+        )
 
 
 class ParsingError(Exception):

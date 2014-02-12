@@ -82,7 +82,7 @@ class Name(Node):
         return parent_equal and self.name == other.name
 
 
-class String(Node):
+class Literal(Node):
     def __init__(self, value, start, end):
         Node.__init__(self, start, end)
         self.value = value
@@ -92,6 +92,14 @@ class String(Node):
         if parent_equal is NotImplemented:
             return NotImplemented
         return parent_equal and self.value == other.value
+
+
+class String(Literal):
+    pass
+
+
+class Integer(Literal):
+    pass
 
 
 class BinaryOperation(Node):

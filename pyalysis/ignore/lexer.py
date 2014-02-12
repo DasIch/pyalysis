@@ -10,7 +10,7 @@ import re
 from collections import deque
 
 from pyalysis.ignore.tokens import (
-    Location, Name, Newline, Indent, Dedent, Operator, String
+    Location, Name, Newline, Indent, Dedent, Operator, String, Integer
 )
 from pyalysis._compat import implements_iterator
 
@@ -23,7 +23,8 @@ TOKEN_DEFINITIONS = [
         (r'[a-zA-Z][a-zA-Z0-9\-]*', Name),
         (r'\n', Newline),
         (r'=', Operator),
-        (r'"[^"]*"', String)
+        (r'"[^"]*"', String),
+        (r'[1-9][0-9]*', Integer)
     ]
 ]
 

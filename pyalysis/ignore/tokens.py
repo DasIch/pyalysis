@@ -54,3 +54,7 @@ class Operator(Token):
 
 class String(Token):
     pass
+
+
+class Integer(Token):
+    pass

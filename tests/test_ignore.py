@@ -34,6 +34,15 @@ from pyalysis.warnings import PrintStatement, DivStatement
         tokens.Operator(u'=', Location(2, 9), Location(2, 10)),
         tokens.String(u'"eggs"', Location(2, 11), Location(2, 17)),
         tokens.Dedent(u'', Location(2, 17), Location(2, 17))
+    ]),
+    (u'foo\n    spam = 1', [
+        tokens.Name(u'foo', Location(1, 0), Location(1, 3)),
+        tokens.Newline(u'\n', Location(1, 3), Location(2, 0)),
+        tokens.Indent(u'    ', Location(2, 0), Location(2, 4)),
+        tokens.Name(u'spam', Location(2, 4), Location(2, 8)),
+        tokens.Operator(u'=', Location(2, 9), Location(2, 10)),
+        tokens.Integer(u'1', Location(2, 11), Location(2, 12)),
+        tokens.Dedent(u'', Location(2, 12), Location(2, 12))
     ])
 ])
 def test_lexer(source, tokens):
@@ -61,6 +70,21 @@ def test_lexer(source, tokens):
             ],
             Location(1, 0),
             Location(2, 17)
+        )
+    ])),
+    (u'foo\n    spam = 1', ast.IgnoreFile('<test>', [
+        ast.Filter(
+            u'foo',
+            [
+                ast.Equal(
+                    ast.Name(u'spam', Location(2, 4), Location(2, 8)),
+                    ast.Integer(1, Location(2, 11), Location(2, 12)),
+                    Location(2, 4),
+                    Location(2, 12)
+                )
+            ],
+            Location(1, 0),
+            Location(2, 12)
         )
     ]))
 ])
@@ -112,6 +136,16 @@ def test_parser(source, ast):
                 u'type string.'
             )
         ]
+    ),
+    (
+        u'star-import\n message = 1',
+        [ast.Filter(u'star-import', [], Location(1, 0), Location(2, 12))],
+        [
+            IgnoreVerificationWarning(
+                u'Ignoring equal expression in line 2. "message" is not of '
+                u'type integer.'
+            )
+        ]
     )
 ])
 def test_verify(source, filters, warnings, recwarn):
@@ -137,6 +171,16 @@ def test_verify(source, filters, warnings, recwarn):
     (
         u'print-statement \n message = "foo"',
         PrintStatement(u'bar', '<test>', 1),
+        True
+    ),
+    (
+        u'print-statement \n lineno = 1',
+        PrintStatement(u'foo', '<test>', 1),
+        False
+    ),
+    (
+        u'print-statement \n lineno = 1',
+        PrintStatement(u'foo', '<test>', 2),
         True
     )
 ])

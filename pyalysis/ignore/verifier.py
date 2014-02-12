@@ -9,7 +9,7 @@
 import warnings
 
 from pyalysis.warnings import WARNINGS
-from pyalysis.ignore.ast import Equal, Name, String
+from pyalysis.ignore.ast import Equal, Name, String, Integer
 from pyalysis._compat import text_type
 
 
@@ -58,7 +58,7 @@ def verify_equal(warning, equal):
             IgnoreVerificationWarning
         )
         return False
-    elif isinstance(equal.left, String) and isinstance(equal.right, String):
+    elif not (isinstance(equal.left, Name) or isinstance(equal.right, Name)):
         warnings.warn(
             (
                 u'Ignoring equal expression with missing name in line '
@@ -67,22 +67,32 @@ def verify_equal(warning, equal):
             IgnoreVerificationWarning
         )
         return False
-    name = equal.left if isinstance(equal.left, Name) else equal.right
-    if name.name not in (name for (name, _) in warning.attributes):
+    name_node = equal.left if isinstance(equal.left, Name) else equal.right
+    if name_node.name not in (name for (name, _) in warning.attributes):
         warnings.warn(
             (
                 u'Ignoring equal expression with "{}". "{}" doesn\'t have '
                 u'such an attribute to compare to. Line {}.'
-            ).format(name.name, warning.type, equal.start.line),
+            ).format(name_node.name, warning.type, equal.start.line),
             IgnoreVerificationWarning
         )
         return False
-    type = next(type for (n, type) in warning.attributes if n == name.name)
-    if not issubclass(type, text_type):
+
+    type_node = equal.right if isinstance(equal.left, Name) else equal.left
+    attribute_type = next(
+        type for (n, type) in warning.attributes if n == name_node.name
+    )
+    if isinstance(type_node, String):
+        comparision_type = text_type
+        type_name = u'string'
+    elif isinstance(type_node, Integer):
+        comparision_type = int
+        type_name = u'integer'
+    if not issubclass(comparision_type, attribute_type):
         warnings.warn(
             u'Ignoring equal expression in line {}. "{}" is not of type '
-            u'string.' \
-                .format(equal.start.line, name.name)
+            u'{}.' \
+                .format(equal.start.line, name_node.name, type_name)
         )
         return False
     return True
