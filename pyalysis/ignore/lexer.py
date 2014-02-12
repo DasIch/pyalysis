@@ -22,7 +22,7 @@ TOKEN_DEFINITIONS = [
     (re.compile(regex), token_cls) for regex, token_cls in [
         (r'[a-zA-Z][a-zA-Z0-9\-]*', Name),
         (r'\n', Newline),
-        (r'[=<>]', Operator),
+        (r'<=|[=<>]', Operator),
         (r'"[^"]*"', String),
         (r'[1-9][0-9]*', Integer)
     ]

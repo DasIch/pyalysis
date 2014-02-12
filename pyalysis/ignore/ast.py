@@ -144,3 +144,7 @@ class LessThan(BinaryOperation):
 
 class GreaterThan(BinaryOperation):
     pass
+
+
+class LessOrEqualThan(BinaryOperation):
+    pass
