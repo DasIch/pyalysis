@@ -8,6 +8,8 @@
 """
 import codecs
 
+from blinker import Signal
+
 from pyalysis.utils import detect_encoding
 from pyalysis.warnings import LineTooLong
 
@@ -16,6 +18,9 @@ class LineAnalyser(object):
     """
     Line-level analyser of Python source code.
     """
+    on_analyse = Signal()
+    on_line = Signal()
+
     def __init__(self, module):
         self.module = module
 
@@ -26,16 +31,19 @@ class LineAnalyser(object):
         self.warnings.append(warning_cls(message, self.module.name, lineno))
 
     def analyse(self):
+        self.on_analyse.send(self)
         reader = codecs.lookup(self.encoding).streamreader(self.module)
         for i, line in enumerate(reader, 1):
-            self.analyse_line(i, line)
+            self.on_line.send(self, lineno=i, line=line)
         return self.warnings
 
-    def analyse_line(self, lineno, line):
-        if len(line.rstrip()) > 79:
-            self.emit(
-                LineTooLong,
-                u'Line is longer than 79 characters. '
-                u'You should keep it below that',
-                lineno
-            )
+
+@LineAnalyser.on_line.connect
+def check_line_length(analyser, lineno, line):
+    if len(line.rstrip()) > 79:
+        analyser.emit(
+            LineTooLong,
+            u'Line is longer than 79 characters. '
+            u'You should keep it below that',
+            lineno
+        )
