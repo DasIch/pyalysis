@@ -18,7 +18,8 @@ setup(
     author_email='ich@danielneuhaeuser.de',
 
     install_requires=[
-        'Argvard>=0.2.0'
+        'Argvard>=0.2.0',
+        'blinker>=1.3'
     ],
     packages=find_packages(),
     entry_points={
