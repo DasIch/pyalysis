@@ -6,6 +6,7 @@
     :copyright: 2014 by Daniel Neuhäuser and Contributors
 """
 import sys
+import codecs
 try:
     import __pypy__
     PYPY = True
@@ -24,11 +25,17 @@ if PY2:
         del cls.__next__
         return cls
 
+    stdout = codecs.lookup(
+        sys.stdout.encoding or 'utf-8'
+    ).streamwriter(sys.stdout)
+
 else:
     text_type = str
 
     def implements_iterator(cls):
         return cls
+
+    stdout = sys.stdout
 
 
 # copied from Flask: flask/_compat.py
