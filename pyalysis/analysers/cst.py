@@ -285,3 +285,59 @@ def check_extraneous_whitespace_inside_tuple(analyser, node):
                     u'Extraneous whitespace before comma in tuple.',
                     node
                 )
+
+
+@CSTAnalyser.on_power.connect
+def check_extraneous_whitespace_function_call(analyser, node):
+    is_function_call = (
+        len(node.children) == 2 and
+        node.children[0].type == nodes.NAME and
+        node.children[1].type == nodes.trailer and
+        node.children[1].children[0].type == nodes.LPAR and
+        node.children[1].children[-1].type == nodes.RPAR
+    )
+    if is_function_call:
+        arguments = node.children[1]
+        if arguments.prefix:
+            analyser.emit(
+                ExtraneousWhitespace,
+                u'Extraneous whitespace before arguments of function call.',
+                node
+            )
+        if len(arguments.children) == 2:
+            if arguments.children[-1].prefix:
+                analyser.emit(
+                    ExtraneousWhitespace,
+                    u'Extraneous whitespace in arguments of function call.',
+                    node
+                )
+        else:
+            if arguments.children[1].prefix and u'\n' not in arguments.children[1].prefix:
+                analyser.emit(
+                    ExtraneousWhitespace,
+                    (
+                        u'Extraneous whitespace at beginning of function '
+                        u'call arguments.'
+                    ),
+                    node
+                )
+            if arguments.children[-1].prefix and u'\n' not in arguments.children[-1].prefix:
+                analyser.emit(
+                    ExtraneousWhitespace,
+                    (
+                        u'Extraneous whitespace at end of function call '
+                        u'arguments.'
+                    ),
+                    node
+                )
+            if arguments.children[1].type == nodes.arglist:
+                for argument in arguments.children[1].children:
+                    if argument.type == nodes.COMMA and argument.prefix:
+                        analyser.emit(
+                            ExtraneousWhitespace,
+                            (
+                                u'Extraneous whitespace before comma in '
+                                u'function call arguments.'
+                            ),
+                            node
+                        )

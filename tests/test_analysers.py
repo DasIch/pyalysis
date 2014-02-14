@@ -349,6 +349,60 @@ class TestExtraneousWhitespace(CSTAnalyserTest):
         )
         assert warning.lineno == 1
 
+    def test_before_function_call(self):
+        source = u'foo ()'
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace before arguments of function call.'
+        )
+        assert warning.lineno == 1
+
+    def test_function_call_empty(self):
+        source = u'foo( )'
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace in arguments of function call.'
+        )
+        assert warning.lineno == 1
+
+    def test_function_call_beginning(self):
+        source = u'foo( 1)'
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace at beginning of function call arguments.'
+        )
+        assert warning.lineno == 1
+
+    def test_function_call_end(self):
+        source = u'foo(1 )'
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace at end of function call arguments.'
+        )
+        assert warning.lineno == 1
+
+    def test_function_call_comma(self):
+        source = u'foo(1 , 2)'
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace before comma in function call arguments.'
+        )
+        assert warning.lineno == 1
 
 
 class ASTAnalyserTest(object):
