@@ -33,8 +33,10 @@ def test_main_successful():
 def test_main_unsuccessful(tmpdir):
     module = os.path.join(str(tmpdir), 'dirty.py')
     with open(module, 'wb') as f:
-        f.write(b'"' + b'x' * 80 + b'"' +
-                b'\nimport os, sys\ndef foo():\n  pass')
+        f.write(b'"' + b'x' * 80 + b'"\n' +
+                b'import os, sys\n' +
+                b'def foo():\n  pass\n' +
+                b'[ 1, 2]')
     with pytest.raises(subprocess.CalledProcessError) as exc_info:
         check_output(['pyalysis', module])
     error = exc_info.value
@@ -57,6 +59,11 @@ def test_main_unsuccessful(tmpdir):
             4, 
             0
         ]
+    }}
+    {{
+        "file": "{0}", 
+        "lineno": 5, 
+        "message": "Extraneous whitespace at the beginning of a list."
     }}
     {{
         "file": "{0}", 

@@ -124,6 +124,17 @@ class DivStatement(ASTWarning):
     type = 'div-statement'
 
 
+class CSTWarning(Warning):
+    attributes = Warning.attributes + [
+        ('lineno', int)
+    ]
+
+
+@PEP8Warning.register
+class ExtraneousWhitespace(CSTWarning):
+    type = 'extraneous-whitespace'
+
+
 def _create_warnings_mapping():
     warnings = {}
     for warning_super_cls in [Warning, AbstractWarning]:

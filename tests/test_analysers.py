@@ -11,11 +11,13 @@ from io import BytesIO
 
 import pytest
 
-from pyalysis.analysers import LineAnalyser, TokenAnalyser, ASTAnalyser
+from pyalysis.analysers import (
+    LineAnalyser, TokenAnalyser, CSTAnalyser, ASTAnalyser
+)
 from pyalysis.warnings import (
     WrongNumberOfIndentationSpaces, MixedTabsAndSpaces, MultipleImports,
     StarImport, IndiscriminateExcept, GlobalKeyword, PrintStatement,
-    DivStatement
+    DivStatement, ExtraneousWhitespace
 )
 from pyalysis._compat import PY2
 
@@ -125,6 +127,51 @@ class TestIndentation(TokenAnalyserTest):
         second = mixed_warnings[1]
         assert second.start == (4, 7)
         assert second.end == (4, 8)
+
+
+class CSTAnalyserTest(object):
+    def analyse_source(self, source):
+        module = BytesIO(
+            textwrap.dedent(source).encode('utf-8')
+        )
+        module.name = '<test>'
+        analyser = CSTAnalyser(module)
+        return analyser.analyse()
+
+
+class TestExtraneousWhitespace(CSTAnalyserTest):
+    def test_list_empty(self):
+        source = u'[ ]'
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace in empty list.'
+        )
+        assert warning.lineno == 1
+
+    @pytest.mark.parametrize('source', [u'[ 1]', u'[ 1, 2]'])
+    def test_list_beginning(self, source):
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace at the beginning of a list.'
+        )
+        assert warning.lineno == 1
+
+    @pytest.mark.parametrize('source', [u'[1 ]', u'[1, 2 ]'])
+    def test_list_end(self, source):
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace at the end of a list.'
+        )
+        assert warning.lineno == 1
 
 
 class ASTAnalyserTest(object):

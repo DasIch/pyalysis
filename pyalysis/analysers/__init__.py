@@ -8,7 +8,8 @@
 """
 from pyalysis.analysers.raw import LineAnalyser
 from pyalysis.analysers.token import TokenAnalyser
+from pyalysis.analysers.cst import CSTAnalyser
 from pyalysis.analysers.ast import ASTAnalyser
 
 
-__all__ = ['LineAnalyser', 'TokenAnalyser', 'ASTAnalyser']
+__all__ = ['LineAnalyser', 'TokenAnalyser', 'CSTAnalyser', 'ASTAnalyser']

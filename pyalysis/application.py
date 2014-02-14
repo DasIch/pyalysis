@@ -9,7 +9,9 @@
 import sys
 import codecs
 
-from pyalysis.analysers import LineAnalyser, TokenAnalyser, ASTAnalyser
+from pyalysis.analysers import (
+    LineAnalyser, TokenAnalyser, CSTAnalyser, ASTAnalyser
+)
 from pyalysis.formatters import JSONFormatter
 from pyalysis.ignore import load_ignore_filter
 from pyalysis._compat import stdout
@@ -17,7 +19,9 @@ from pyalysis._compat import stdout
 
 class Pyalysis(object):
     def __init__(self):
-        self.analyser_classes = [LineAnalyser, TokenAnalyser, ASTAnalyser]
+        self.analyser_classes = [
+            LineAnalyser, TokenAnalyser, CSTAnalyser, ASTAnalyser
+        ]
         self.formatter_class = JSONFormatter
         self.ignore_file_path = '.pyalysis.ignore'
         self.output = stdout
