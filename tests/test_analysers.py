@@ -173,6 +173,61 @@ class TestExtraneousWhitespace(CSTAnalyserTest):
         )
         assert warning.lineno == 1
 
+    def test_before_slicing_or_indexing(self):
+        source = u'foo [0]'
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace before slicing or indexing.'
+        )
+        assert warning.lineno == 1
+
+    def test_beginning_of_slicing_or_indexing(self):
+        source = u'foo[ 0]'
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace at the beginning of slicing or indexing.'
+        )
+        assert warning.lineno == 1
+
+    def test_end_of_slicing_or_indexing(self):
+        source = u'foo[0 ]'
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace at the end of slicing or indexing.'
+        )
+        assert warning.lineno == 1
+
+    @pytest.mark.parametrize('source', [u'foo[ 0:]', u'foo[ 0::]'])
+    def test_beginning_of_slicing(self, source):
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace at the beginning of slicing.'
+        )
+        assert warning.lineno == 1
+
+    @pytest.mark.parametrize('source', [u'foo[0: ]', u'foo[0:: ]'])
+    def test_end_of_slicing(self, source):
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace at the end of slicing.'
+        )
+        assert warning.lineno == 1
+
 
 class ASTAnalyserTest(object):
     def analyse_source(self, source):

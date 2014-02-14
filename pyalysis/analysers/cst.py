@@ -117,3 +117,53 @@ def check_extraneous_whitespace_inside_list(analyser, node):
                 u'Extraneous whitespace at the end of a list.',
                 node
             )
+
+
+@CSTAnalyser.on_power.connect
+def check_extraneous_whitespace_slicing_or_indexing(analyser, node):
+    is_slicing_or_indexing = (
+        len(node.children) == 2 and
+        node.children[1].type == nodes.trailer and
+        node.children[1].children[0].type == nodes.LSQB and
+        node.children[1].children[-1].type == nodes.RSQB
+    )
+    if is_slicing_or_indexing:
+        slicing_or_indexing = node.children[1]
+        if slicing_or_indexing.children[1].type == nodes.subscript:
+            if slicing_or_indexing.children[1].prefix:
+                analyser.emit(
+                    ExtraneousWhitespace,
+                    u'Extraneous whitespace at the beginning of slicing.',
+                    node
+                )
+            if slicing_or_indexing.children[-1].prefix:
+                analyser.emit(
+                    ExtraneousWhitespace,
+                    u'Extraneous whitespace at the end of slicing.',
+                    node
+                )
+        else:
+            if slicing_or_indexing.prefix:
+                analyser.emit(
+                    ExtraneousWhitespace,
+                    u'Extraneous whitespace before slicing or indexing.',
+                    node
+                )
+            if slicing_or_indexing.children[1].prefix:
+                analyser.emit(
+                    ExtraneousWhitespace,
+                    (
+                        u'Extraneous whitespace at the beginning of slicing '
+                        u'or indexing.'
+                    ),
+                    node
+                )
+            if slicing_or_indexing.children[-1].prefix:
+                analyser.emit(
+                    ExtraneousWhitespace,
+                    (
+                        u'Extraneous whitespace at the end of slicing or '
+                        u'indexing.'
+                    ),
+                    node
+                )
