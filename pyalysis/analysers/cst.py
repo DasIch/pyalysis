@@ -117,6 +117,14 @@ def check_extraneous_whitespace_inside_list(analyser, node):
                 u'Extraneous whitespace at the end of a list.',
                 node
             )
+        if node.children[1].type == nodes.listmaker:
+            for node in node.children[1].children:
+                if node.type == nodes.COMMA and node.prefix:
+                    analyser.emit(
+                        ExtraneousWhitespace,
+                        u'Extraneous whitespace before comma in list.',
+                        node
+                    )
 
 
 @CSTAnalyser.on_power.connect

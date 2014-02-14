@@ -173,6 +173,17 @@ class TestExtraneousWhitespace(CSTAnalyserTest):
         )
         assert warning.lineno == 1
 
+    def test_list_comma(self):
+        source = u'[1 , 2]'
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace before comma in list.'
+        )
+        assert warning.lineno == 1
+
     def test_before_slicing_or_indexing(self):
         source = u'foo [0]'
         warnings = self.analyse_source(source)
