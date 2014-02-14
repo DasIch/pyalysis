@@ -180,7 +180,8 @@ def check_extraneous_whitespace_inside_dict(analyser, node):
         len(node.children) == 3 and
         node.children[0].type == nodes.LBRACE and
         node.children[1].type == nodes.dictsetmaker and
-        node.children[2].type == nodes.RBRACE
+        node.children[2].type == nodes.RBRACE and
+        any(n.type == nodes.COLON for n in node.children[1].children)
     )
     if is_empty_dict:
         if node.children[1].prefix and u'\n' not in node.children[1].prefix:
@@ -207,5 +208,41 @@ def check_extraneous_whitespace_inside_dict(analyser, node):
                 analyser.emit(
                     ExtraneousWhitespace,
                     u'Extraneous whitespace before colon in dict.',
+                    node
+                )
+
+@CSTAnalyser.on_atom.connect
+def check_extraneous_whitespace_inside_set(analyser, node):
+    is_single_element_set = (
+        len(node.children) == 3 and
+        node.children[0].type == nodes.LBRACE and
+        node.children[1].type != nodes.dictsetmaker and
+        node.children[2].type == nodes.RBRACE
+    )
+    is_multiple_element_set = (
+        len(node.children) == 3 and
+        node.children[0].type == nodes.LBRACE and
+        node.children[1].type == nodes.dictsetmaker and
+        node.children[2].type == nodes.RBRACE and
+        any(n.type == nodes.COMMA for n in node.children[1].children)
+    )
+    if is_single_element_set or is_multiple_element_set:
+        if node.children[1].prefix and u'\n' not in node.children[1].prefix:
+            analyser.emit(
+                ExtraneousWhitespace,
+                u'Extraneous whitespace at beginning of set.',
+                node
+            )
+        if node.children[-1].prefix and u'\n' not in node.children[-1].prefix:
+            analyser.emit(
+                ExtraneousWhitespace,
+                u'Extraneous whitespace at end of set.',
+                node
+            )
+        for child in node.children[1].children:
+            if child.type == nodes.COMMA and child.prefix:
+                analyser.emit(
+                    ExtraneousWhitespace,
+                    u'Extraneous whitespace before comma in set.',
                     node
                 )

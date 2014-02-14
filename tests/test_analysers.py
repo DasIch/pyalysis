@@ -272,6 +272,40 @@ class TestExtraneousWhitespace(CSTAnalyserTest):
         )
         assert warning.lineno == 1
 
+    @pytest.mark.parametrize('source', [u'{ 1}', u'{ 1, 2}'])
+    def test_set_beginning(self, source):
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace at beginning of set.'
+        )
+        assert warning.lineno == 1
+
+    @pytest.mark.parametrize('source', [u'{1 }', u'{1, 2 }'])
+    def test_set_end(self, source):
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace at end of set.'
+        )
+        assert warning.lineno == 1
+
+    def test_set_colon(self):
+        source = u'{1 , 2}'
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace before comma in set.'
+        )
+        assert warning.lineno == 1
+
+
 
 class ASTAnalyserTest(object):
     def analyse_source(self, source):
