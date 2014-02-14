@@ -305,6 +305,39 @@ class TestExtraneousWhitespace(CSTAnalyserTest):
         )
         assert warning.lineno == 1
 
+    def test_tuple_beginning(self):
+        source = u'( 1,)'
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace at beginning of tuple.'
+        )
+        assert warning.lineno == 1
+
+    def test_tuple_end(self):
+        source = u'(1, 2 )'
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace at end of tuple.'
+        )
+        assert warning.lineno == 1
+
+    def test_tuple_comma(self):
+        source = u'(1 , 2)'
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace before comma in tuple.'
+        )
+        assert warning.lineno == 1
+
 
 
 class ASTAnalyserTest(object):

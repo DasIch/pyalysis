@@ -211,6 +211,7 @@ def check_extraneous_whitespace_inside_dict(analyser, node):
                     node
                 )
 
+
 @CSTAnalyser.on_atom.connect
 def check_extraneous_whitespace_inside_set(analyser, node):
     is_single_element_set = (
@@ -244,5 +245,35 @@ def check_extraneous_whitespace_inside_set(analyser, node):
                 analyser.emit(
                     ExtraneousWhitespace,
                     u'Extraneous whitespace before comma in set.',
+                    node
+                )
+
+
+@CSTAnalyser.on_atom.connect
+def check_extraneous_whitespace_inside_tuple(analyser, node):
+    is_tuple = (
+        len(node.children) == 3 and
+        node.children[0].type == nodes.LPAR and
+        node.children[1].type == nodes.testlist_gexp and
+        node.children[2].type == nodes.RPAR
+    )
+    if is_tuple:
+        if node.children[1].prefix and u'\n' not in node.children[1].prefix:
+            analyser.emit(
+                ExtraneousWhitespace,
+                u'Extraneous whitespace at beginning of tuple.',
+                node
+            )
+        if node.children[-1].prefix and u'\n' not in node.children[-1].prefix:
+            analyser.emit(
+                ExtraneousWhitespace,
+                u'Extraneous whitespace at end of tuple.',
+                node
+            )
+        for child in node.children[1].children:
+            if child.type == nodes.COMMA and child.prefix:
+                analyser.emit(
+                    ExtraneousWhitespace,
+                    u'Extraneous whitespace before comma in tuple.',
                     node
                 )
