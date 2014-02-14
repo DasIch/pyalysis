@@ -167,3 +167,45 @@ def check_extraneous_whitespace_slicing_or_indexing(analyser, node):
                     ),
                     node
                 )
+
+
+@CSTAnalyser.on_atom.connect
+def check_extraneous_whitespace_inside_dict(analyser, node):
+    is_empty_dict = (
+        len(node.children) == 2 and
+        node.children[0].type == nodes.LBRACE and
+        node.children[1].type == nodes.RBRACE
+    )
+    is_nonempty_dict = (
+        len(node.children) == 3 and
+        node.children[0].type == nodes.LBRACE and
+        node.children[1].type == nodes.dictsetmaker and
+        node.children[2].type == nodes.RBRACE
+    )
+    if is_empty_dict:
+        if node.children[1].prefix and u'\n' not in node.children[1].prefix:
+            analyser.emit(
+                ExtraneousWhitespace,
+                u'Extraneous whitespace in empty dict.',
+                node
+            )
+    if is_nonempty_dict:
+        if node.children[1].prefix and u'\n' not in node.children[1].prefix:
+            analyser.emit(
+                ExtraneousWhitespace,
+                u'Extraneous whitespace at beginning of dict.',
+                node
+            )
+        if node.children[-1].prefix and u'\n' not in node.children[-1].prefix:
+            analyser.emit(
+                ExtraneousWhitespace,
+                u'Extraneous whitespace at end of dict.',
+                node
+            )
+        for child in node.children[1].children:
+            if child.type == nodes.COLON and child.prefix:
+                analyser.emit(
+                    ExtraneousWhitespace,
+                    u'Extraneous whitespace before colon in dict.',
+                    node
+                )

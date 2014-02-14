@@ -228,6 +228,50 @@ class TestExtraneousWhitespace(CSTAnalyserTest):
         )
         assert warning.lineno == 1
 
+    def test_empty_dict(self):
+        source = u'{ }'
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace in empty dict.'
+        )
+        assert warning.lineno == 1
+
+    def test_dict_beginning(self):
+        source = u'{ 1: 2}'
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace at beginning of dict.'
+        )
+        assert warning.lineno == 1
+
+    def test_dict_end(self):
+        source = u'{1: 2 }'
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace at end of dict.'
+        )
+        assert warning.lineno == 1
+
+    def test_dict_colon(self):
+        source = u'{1 : 2}'
+        warnings = self.analyse_source(source)
+        assert len(warnings) == 1
+        warning = warnings[0]
+        assert isinstance(warning, ExtraneousWhitespace)
+        assert warning.message == (
+            u'Extraneous whitespace before colon in dict.'
+        )
+        assert warning.lineno == 1
+
 
 class ASTAnalyserTest(object):
     def analyse_source(self, source):
