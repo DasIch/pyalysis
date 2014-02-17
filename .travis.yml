@@ -5,6 +5,7 @@ env:
   - TOX_ENV=pypy
   - TOX_ENV=py33
   - TOX_ENV=pyalysis
+  - TOX_ENV=pyflakes
   - TOX_ENV=packaging-py27
   - TOX_ENV=packaging-pypy
   - TOX_ENV=packaging-py33

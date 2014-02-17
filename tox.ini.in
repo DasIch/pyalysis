@@ -23,6 +23,10 @@ INTERPRETER_INDEPENDENT_ENVIRONMENTS = OrderedDict([
         (u'commands', [
             u'sh -c "find pyalysis tests -iname \\"*.py\\" | xargs pyalysis"'
         ])
+    ])),
+    (u'pyflakes', OrderedDict([
+        (u'deps', [u'pyflakes>=0.7.3']),
+        (u'commands', [u'pyflakes pyalysis tests'])
     ]))
 ])
 
