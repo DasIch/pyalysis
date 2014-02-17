@@ -10,7 +10,7 @@ import warnings
 
 from pyalysis.warnings import WARNINGS
 from pyalysis.ignore.ast import (
-    Equal, Name, String, Integer, BinaryOperation, LessThan, GreaterThan,
+    Equal, String, Integer, BinaryOperation, LessThan, GreaterThan,
     LessOrEqualThan, GreaterOrEqualThan
 )
 from pyalysis._compat import text_type
