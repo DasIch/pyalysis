@@ -42,38 +42,19 @@ def test_main_unsuccessful(tmpdir):
     error = exc_info.value
     assert error.returncode == 1
     assert error.output.decode('utf-8') == textwrap.dedent(u"""\
-    {{
-        "file": "{0}", 
-        "lineno": 1, 
-        "message": "{1}"
-    }}
-    {{
-        "end": [
-            4, 
-            2
-        ], 
-        "file": "{0}", 
-        "lineno": 4, 
-        "message": "Indented by 2 spaces instead of 4 as demanded by PEP 8", 
-        "start": [
-            4, 
-            0
-        ]
-    }}
-    {{
-        "file": "{0}", 
-        "lineno": 5, 
-        "message": "Extraneous whitespace at the beginning of a list."
-    }}
-    {{
-        "file": "{0}", 
-        "lineno": 2, 
-        "message": "Multiple imports on one line. Should be on separate ones."
-    }}
-    """.format(
-        module,
-        u'Line is longer than 79 characters. You should keep it below that'
-    ))
+    File "{0}", line 1
+    Line is longer than 79 characters. You should keep it below that
+
+    File "{0}", line 4
+    Indented by 2 spaces instead of 4 as demanded by PEP 8
+
+    File "{0}", line 5
+    Extraneous whitespace at the beginning of a list.
+
+    File "{0}", line 2
+    Multiple imports on one line. Should be on separate ones.
+
+    """.format(module))
 
 
 def test_main_ignore(tmpcwd):

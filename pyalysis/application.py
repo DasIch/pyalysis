@@ -12,7 +12,7 @@ import codecs
 from pyalysis.analysers import (
     LineAnalyser, TokenAnalyser, CSTAnalyser, ASTAnalyser
 )
-from pyalysis.formatters import JSONFormatter
+from pyalysis.formatters import TextFormatter
 from pyalysis.ignore import load_ignore_filter
 from pyalysis._compat import stdout
 
@@ -22,7 +22,7 @@ class Pyalysis(object):
         self.analyser_classes = [
             LineAnalyser, TokenAnalyser, CSTAnalyser, ASTAnalyser
         ]
-        self.formatter_class = JSONFormatter
+        self.formatter_class = TextFormatter
         self.ignore_file_path = '.pyalysis.ignore'
         self.output = stdout
         self.warned = False

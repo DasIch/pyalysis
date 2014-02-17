@@ -7,6 +7,7 @@
     :license: BSD, see LICENSE.rst for details
 """
 import json
+import textwrap
 
 from pyalysis.warnings import TokenWarning
 from pyalysis._compat import PYPY
@@ -45,3 +46,27 @@ class JSONFormatter(object):
             js = js.decode('utf-8')
         self.output.write(js)
         self.output.write(u'\n')
+
+
+class TextFormatter(object):
+    """
+    Formats warnings as human readable text.
+    """
+    def __init__(self, output):
+        self.output = output
+
+    def format(self, warning):
+        """
+        Formats a single `warning`.
+        """
+        self.output.write(
+            textwrap.dedent(u"""\
+                File "{file}", line {lineno}
+                {message}
+
+            """).format(
+                file=warning.file,
+                lineno=warning.lineno,
+                message=textwrap.fill(warning.message)
+            )
+        )
