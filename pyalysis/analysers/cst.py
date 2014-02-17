@@ -312,7 +312,8 @@ def check_extraneous_whitespace_function_call(analyser, node):
                     node
                 )
         else:
-            if arguments.children[1].prefix and u'\n' not in arguments.children[1].prefix:
+            first_argument = arguments.children[1]
+            if first_argument.prefix and u'\n' not in first_argument.prefix:
                 analyser.emit(
                     ExtraneousWhitespace,
                     (
@@ -321,7 +322,8 @@ def check_extraneous_whitespace_function_call(analyser, node):
                     ),
                     node
                 )
-            if arguments.children[-1].prefix and u'\n' not in arguments.children[-1].prefix:
+            last_paren = arguments.children[-1]
+            if last_paren.prefix and u'\n' not in last_paren.prefix:
                 analyser.emit(
                     ExtraneousWhitespace,
                     (
