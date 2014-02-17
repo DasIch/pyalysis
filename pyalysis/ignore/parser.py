@@ -63,9 +63,9 @@ def parse_expression(token_stream):
                         u'expected newline or dedent, got {} at line {}, '
                         u'column {}'
                     ).format(
-                        token.__class__.__name__,
-                        token.start.line,
-                        token.start.column
+                        final_token.__class__.__name__,
+                        final_token.start.line,
+                        final_token.start.column
                     )
                 )
     return {
