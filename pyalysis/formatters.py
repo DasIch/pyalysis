@@ -8,7 +8,7 @@
 """
 import json
 
-from pyalysis.warnings import LineWarning, TokenWarning, ASTWarning
+from pyalysis.warnings import TokenWarning
 from pyalysis._compat import PYPY
 
 
