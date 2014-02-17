@@ -26,6 +26,12 @@ def test_detect_encoding(source, expected):
     assert file.read() == source
 
 
+def test_detect_encoding_bom_conflict():
+    file = BytesIO(codecs.BOM_UTF8 + b'# coding: ascii')
+    with pytest.raises(SyntaxError):
+        detect_encoding(file)
+
+
 def test_classproperty():
     class Foo(object):
         @classproperty

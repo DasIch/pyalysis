@@ -35,6 +35,13 @@ if PY2:
                 encoding = match.group(1)
         else:
             encoding = match.group(1)
+        if bom_found:
+            if encoding == 'utf-8' or encoding == 'utf-8-sig':
+                encoding = 'utf-8-sig'
+            else:
+                raise SyntaxError(
+                    'Found utf8 BOM in conflict with encoding declaration'
+                )
         file.seek(0)
         return encoding
 else:
