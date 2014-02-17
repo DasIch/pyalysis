@@ -9,6 +9,7 @@ import sys
 import codecs
 try:
     import __pypy__
+    del __pypy__
     PYPY = True
 except ImportError:
     PYPY = False
