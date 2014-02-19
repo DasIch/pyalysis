@@ -11,6 +11,7 @@ from io import StringIO
 
 from pyalysis.formatters import JSONFormatter, TextFormatter
 from pyalysis.warnings import TokenWarning, ASTWarning, CSTWarning
+from pyalysis.ignore.verifier import IgnoreVerificationWarning
 from pyalysis.analysers.token import Location
 
 
@@ -168,5 +169,51 @@ class TestTextFormatter(object):
 
         File "<test>", line 2
         b message
+
+        """)
+
+    def test_ignore_verification_warning(self):
+        output = StringIO()
+        formatter = TextFormatter(output)
+        formatter.format(
+            IgnoreVerificationWarning(
+                u'a message',
+                '<test>',
+                Location(1, 0),
+                Location(1, 10),
+                [u'abcdefghij']
+            )
+        )
+        formatter.format(
+            IgnoreVerificationWarning(
+                u'b message',
+                '<test>',
+                Location(2, 0),
+                Location(2, 10),
+                [u'klmnopqrst']
+            )
+        )
+        formatter.format(
+            IgnoreVerificationWarning(
+                u'c message',
+                '<test>',
+                Location(3, 0),
+                Location(4, 4),
+                [u'spam', u'eggs']
+            )
+        )
+        assert output.getvalue() == textwrap.dedent(u"""\
+            File "<test>", line 1
+              abcdefghij
+            a message
+
+            File "<test>", line 2
+              klmnopqrst
+            b message
+
+            File "<test>", lines 3-4
+              3 spam
+              4 eggs
+            c message
 
         """)

@@ -6,6 +6,7 @@
     :copyright: 2014 by Daniel Neuhäuser and Contributors
     :license: BSD, see LICENSE.rst for details
 """
+import math
 import re
 import codecs
 import tokenize
@@ -66,3 +67,7 @@ def iter_subclasses(cls):
         for subsubclass in iter_subclasses(subclass):
             yield subsubclass
     yield cls
+
+
+def count_digits(n):
+    return int(math.floor(math.log10(n))) + 1

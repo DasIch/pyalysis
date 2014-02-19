@@ -10,7 +10,8 @@ import json
 import textwrap
 
 from pyalysis.warnings import TokenWarning
-from pyalysis._compat import PYPY
+from pyalysis.utils import count_digits
+from pyalysis._compat import PYPY, text_type
 
 
 class JSONFormatter(object):
@@ -69,14 +70,38 @@ class TextFormatter(object):
                 )
         else:
             location = u'line {}'.format(warning.lineno)
-        self.output.write(
-            textwrap.dedent(u"""\
+        if hasattr(warning, 'lines'):
+            lines = warning.lines
+            template = textwrap.dedent(u"""\
+                File "{file}", {location}
+                {lines}
+                {message}
+
+            """)
+        else:
+            lines = []
+            template = textwrap.dedent(u"""\
                 File "{file}", {location}
                 {message}
 
-            """).format(
+            """)
+        if len(lines) > 1:
+            lineno_length = count_digits(warning.end.line)
+            lines_with_lineno = []
+            for lineno, line in enumerate(lines, warning.start.line):
+                lines_with_lineno.append(
+                    u' ' * 2 +
+                    text_type(lineno).rjust(lineno_length) +
+                    u' ' + line
+                )
+            lines = lines_with_lineno
+        else:
+            lines = [u' ' * 2 + line for line in lines]
+        self.output.write(
+            template.format(
                 file=warning.file,
                 location=location,
+                lines=u'\n'.join(lines),
                 message=textwrap.fill(warning.message)
             )
         )
