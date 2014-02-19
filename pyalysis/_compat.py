@@ -29,6 +29,9 @@ if PY2:
     stdout = codecs.lookup(
         sys.stdout.encoding or 'utf-8'
     ).streamwriter(sys.stdout)
+    stderr = codecs.lookup(
+        sys.stderr.encoding or 'utf-8'
+    ).streamwriter(sys.stderr)
 
 else:
     text_type = str
@@ -37,6 +40,7 @@ else:
         return cls
 
     stdout = sys.stdout
+    stderr = sys.stderr
 
 
 # copied from Flask: flask/_compat.py

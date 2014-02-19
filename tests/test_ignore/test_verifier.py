@@ -6,6 +6,8 @@
     :copyright: 2014 by Daniel Neuhäuser and Contributors
     :license: BSD, see LICENSE.rst for details
 """
+from io import StringIO
+
 import pytest
 
 from pyalysis.ignore import ast
@@ -49,8 +51,12 @@ class VerifyTest(object):
             if not issubclass(type, supported_type):
                 return type_name
 
-    def assert_verify(self, source, filters):
-        assert list(verify(parse(lex(source)))) == filters
+    def assert_verify(self, source, expected_filters, expected_warnings):
+        file = StringIO(source)
+        file.name = '<test>'
+        filters, warnings = verify(file, parse(lex(file.read())))
+        assert filters == expected_filters
+        assert warnings == expected_warnings
 
     def assert_warnings(self, recwarn, warnings):
         if warnings:
@@ -67,15 +73,18 @@ class TestVerifyType(VerifyTest):
     @pytest.mark.parametrize(('type', 'passes', 'warnings'), [
         (u'pep8', True, []),
         (u'foo', False, [IgnoreVerificationWarning(
-            u'Ignoring filter with unknown warning type: "foo" in line 1.'
+            u'Ignoring filter with unknown warning type "foo".',
+            '<test>',
+            Location(1, 0),
+            Location(1, 3),
+            [u'foo']
         )])
     ])
-    def test(self, type, passes, warnings, recwarn):
+    def test(self, type, passes, warnings):
         filters = [
             ast.Filter(type, [], Location(1, 0), Location(1, len(type)))
         ]
-        self.assert_verify(type, filters if passes else [])
-        self.assert_warnings(recwarn, warnings)
+        self.assert_verify(type, filters if passes else [], warnings)
 
 
 class BinaryOperationVerifyTest(VerifyTest):
@@ -89,11 +98,14 @@ class BinaryOperationVerifyTest(VerifyTest):
                 Location(2, 9 + len(operation))
             )
         ]
-        self.assert_verify(source, filters)
-        self.assert_warnings(recwarn, [
+        self.assert_verify(source, filters, [
             IgnoreVerificationWarning(
-                u'Ignoring {} expression with missing constant in line 2.' \
-                    .format(operation_name)
+                u'Ignoring {} expression with missing constant.'
+                .format(operation_name),
+                '<test>',
+                Location(2, 1),
+                Location(2, 9 + len(operation)),
+                [u' foo {} bar'.format(operation)]
             )
         ])
 
@@ -106,11 +118,14 @@ class BinaryOperationVerifyTest(VerifyTest):
                 Location(2, 13 + len(operation))
             )
         ]
-        self.assert_verify(source, filters)
-        self.assert_warnings(recwarn, [
+        self.assert_verify(source, filters, [
             IgnoreVerificationWarning(
-                u'Ignoring {} expression with missing name in line 2.' \
-                    .format(operation_name)
+                u'Ignoring {} expression with missing name.'
+                .format(operation_name),
+                '<test>',
+                Location(2, 1),
+                Location(2, 13 + len(operation)),
+                [u' "foo" {} "bar"'.format(operation)]
             )
         ])
 
@@ -124,13 +139,16 @@ class BinaryOperationVerifyTest(VerifyTest):
                 Location(2, 11 + len(operation))
             )
         ]
-        self.assert_verify(source, filters)
-        self.assert_warnings(recwarn, [
+        self.assert_verify(source, filters, [
             IgnoreVerificationWarning(
                 (
                     u'Ignoring {} expression with "foo". "star-import" '
-                    u'doesn\'t have such an attribute to compare to. Line 2.'
-                ).format(operation_name)
+                    u'doesn\'t have such an attribute to compare to.'
+                ).format(operation_name),
+                '<test>',
+                Location(2, 1),
+                Location(2, 11 + len(operation)),
+                [u' foo {} "bar"'.format(operation)]
             )
         ])
 
@@ -147,13 +165,14 @@ class BinaryOperationVerifyTest(VerifyTest):
                 Location(2, 3 + sum(map(len, [attribute, operation,
                                               unsupported_literal]))))
         ]
-        self.assert_verify(source, filters)
-        self.assert_warnings(recwarn, [
+        self.assert_verify(source, filters, [
             IgnoreVerificationWarning(
-                (
-                    u'Ignoring {} expression in line 2. "{}" is not of '
-                    u'type {}.'
-                ).format(operation_name, attribute, unsupported_type_name)
+                u'Ignoring {} expression. "{}" is not of type {}.'
+                    .format(operation_name, attribute, unsupported_type_name),
+                '<test>',
+                Location(2, 1),
+                filters[0].end,
+                [source.splitlines()[1]]
             )
         ])
 

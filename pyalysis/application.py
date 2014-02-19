@@ -14,7 +14,7 @@ from pyalysis.analysers import (
 )
 from pyalysis.formatters import TextFormatter
 from pyalysis.ignore import load_ignore_filter
-from pyalysis._compat import stdout
+from pyalysis._compat import stdout, stderr
 
 
 class Pyalysis(object):
@@ -33,12 +33,18 @@ class Pyalysis(object):
     def should_emit(self):
         if self._should_emit is None:
             try:
-                with codecs.open(self.ignore_file_path,
-                                 'r',
-                                 encoding='utf-8') as ignore_file:
-                    self._should_emit = load_ignore_filter(ignore_file)
+                with codecs.open(
+                    self.ignore_file_path, 'r', encoding='utf-8'
+                ) as ignore_file:
+                    self._should_emit, warnings = load_ignore_filter(
+                        ignore_file
+                    )
             except IOError:
                 self._should_emit = lambda _: True
+            else:
+                formatter = TextFormatter(stderr)
+                for warning in warnings:
+                    formatter.format(warning)
         return self._should_emit
 
     def analyse_file(self, file_path):

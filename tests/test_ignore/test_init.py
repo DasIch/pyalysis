@@ -19,7 +19,9 @@ from pyalysis.warnings import PrintStatement, DivStatement
     (u'print-statement', PrintStatement(u'message', '<test>', 1), False),
     (u'print-statement', DivStatement(u'message', '<test>', 1), True)
 ])
-def test_load_ignore_filer(source, warning, allowed):
+def test_load_ignore_filter(source, warning, allowed):
     file = StringIO(source)
     file.name = '<test>'
-    assert load_ignore_filter(file)(warning) == allowed
+    filter, warnings = load_ignore_filter(file)
+    assert filter(warning) == allowed
+    assert not warnings

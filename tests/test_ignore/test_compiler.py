@@ -6,6 +6,8 @@
     :copyright: 2014 by Daniel Neuhäuser and Contributors
     :license: BSD, see LICENSE.rst for details
 """
+from io import StringIO
+
 import pytest
 
 from pyalysis.warnings import PrintStatement, DivStatement
@@ -95,4 +97,7 @@ from pyalysis.ignore.compiler import compile
     )
 ])
 def test_compile(source, warning, allowed):
-    assert compile(verify(parse(lex(source))))(warning) == allowed
+    file = StringIO(source)
+    file.name = '<test>'
+    filter = compile(verify(file, parse(lex(file.read())))[0])
+    assert filter(warning) == allowed

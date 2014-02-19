@@ -13,4 +13,6 @@ from pyalysis.ignore.compiler import compile
 
 
 def load_ignore_filter(file):
-    return compile(verify(parse(lex(file.read()), file.name)))
+    ast = parse(lex(file.read()), file.name)
+    filters, warnings = verify(file, ast)
+    return compile(filters), warnings
