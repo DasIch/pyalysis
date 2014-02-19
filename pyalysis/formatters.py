@@ -90,9 +90,10 @@ class TextFormatter(object):
             lines_with_lineno = []
             for lineno, line in enumerate(lines, warning.start.line):
                 lines_with_lineno.append(
-                    u' ' * 2 +
-                    text_type(lineno).rjust(lineno_length) +
-                    u' ' + line
+                    u'  {} {}'.format(
+                        text_type(lineno).rjust(lineno_length),
+                        line
+                    )
                 )
             lines = lines_with_lineno
         else:
