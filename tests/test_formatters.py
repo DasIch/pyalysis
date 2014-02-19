@@ -9,7 +9,7 @@
 import textwrap
 from io import StringIO
 
-from pyalysis.formatters import JSONFormatter
+from pyalysis.formatters import JSONFormatter, TextFormatter
 from pyalysis.warnings import TokenWarning, ASTWarning, CSTWarning
 
 
@@ -82,4 +82,48 @@ class TestJSONFormatter(object):
             "lineno": 2, 
             "message": "b message"
         }
+        """)
+
+
+class TestTextFormatter(object):
+    def test_token_warning(self):
+        output = StringIO()
+        formatter = TextFormatter(output)
+        formatter.format(TokenWarning(u'a message', '<test>', (1, 0), (1, 10)))
+        formatter.format(TokenWarning(u'b message', '<test>', (2, 0), (2, 20)))
+        assert output.getvalue() == textwrap.dedent(u"""\
+        File "<test>", line 1
+        a message
+
+        File "<test>", line 2
+        b message
+
+        """)
+
+    def test_ast_warning(self):
+        output = StringIO()
+        formatter = TextFormatter(output)
+        formatter.format(ASTWarning(u'a message', '<test>', 1))
+        formatter.format(ASTWarning(u'b message', '<test>', 2))
+        assert output.getvalue() == textwrap.dedent(u"""\
+        File "<test>", line 1
+        a message
+
+        File "<test>", line 2
+        b message
+
+        """)
+
+    def test_cst_warning(self):
+        output = StringIO()
+        formatter = TextFormatter(output)
+        formatter.format(CSTWarning(u'a message', '<test>', 1))
+        formatter.format(CSTWarning(u'b message', '<test>', 2))
+        assert output.getvalue() == textwrap.dedent(u"""\
+        File "<test>", line 1
+        a message
+
+        File "<test>", line 2
+        b message
+
         """)
