@@ -10,7 +10,7 @@ import textwrap
 from io import StringIO
 
 from pyalysis.formatters import JSONFormatter
-from pyalysis.warnings import TokenWarning
+from pyalysis.warnings import TokenWarning, ASTWarning
 
 
 class TestJSONFormatter(object):
@@ -45,5 +45,24 @@ class TestJSONFormatter(object):
                 2, 
                 0
             ]
+        }
+        """)
+
+    def test_ast_warning(self):
+        output = StringIO()
+        formatter = JSONFormatter(output)
+        formatter.format(ASTWarning(u'a message', '<test>', 1))
+        formatter.format(ASTWarning(u'b message', '<test>', 2))
+        print output.getvalue()
+        assert output.getvalue() == textwrap.dedent(u"""\
+        {
+            "file": "<test>", 
+            "lineno": 1, 
+            "message": "a message"
+        }
+        {
+            "file": "<test>", 
+            "lineno": 2, 
+            "message": "b message"
         }
         """)
