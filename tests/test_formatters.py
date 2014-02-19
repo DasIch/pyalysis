@@ -11,14 +11,28 @@ from io import StringIO
 
 from pyalysis.formatters import JSONFormatter, TextFormatter
 from pyalysis.warnings import TokenWarning, ASTWarning, CSTWarning
+from pyalysis.analysers.token import Location
 
 
 class TestJSONFormatter(object):
     def test_token_warning(self):
         output = StringIO()
         formatter = JSONFormatter(output)
-        formatter.format(TokenWarning(u'a message', '<test>', (1, 0), (1, 10)))
-        formatter.format(TokenWarning(u'b message', '<test>', (2, 0), (2, 20)))
+        formatter.format(
+            TokenWarning(
+                u'a message', '<test>', Location(1, 0), Location(1, 10)
+            )
+        )
+        formatter.format(
+            TokenWarning(
+                u'b message', '<test>', Location(2, 0), Location(2, 20)
+            )
+        )
+        formatter.format(
+            TokenWarning(
+                u'c message', '<test>', Location(2, 0), Location(3, 20)
+            )
+        )
         assert output.getvalue() == textwrap.dedent(u"""\
         {
             "end": [
@@ -41,6 +55,19 @@ class TestJSONFormatter(object):
             "file": "<test>", 
             "lineno": 2, 
             "message": "b message", 
+            "start": [
+                2, 
+                0
+            ]
+        }
+        {
+            "end": [
+                3, 
+                20
+            ], 
+            "file": "<test>", 
+            "lineno": 2, 
+            "message": "c message", 
             "start": [
                 2, 
                 0
@@ -89,14 +116,30 @@ class TestTextFormatter(object):
     def test_token_warning(self):
         output = StringIO()
         formatter = TextFormatter(output)
-        formatter.format(TokenWarning(u'a message', '<test>', (1, 0), (1, 10)))
-        formatter.format(TokenWarning(u'b message', '<test>', (2, 0), (2, 20)))
+        formatter.format(
+            TokenWarning(
+                u'a message', '<test>', Location(1, 0), Location(1, 10)
+            )
+        )
+        formatter.format(
+            TokenWarning(
+                u'b message', '<test>', Location(2, 0), Location(2, 20)
+            )
+        )
+        formatter.format(
+            TokenWarning(
+                u'c message', '<test>', Location(2, 0), Location(3, 20)
+            )
+        )
         assert output.getvalue() == textwrap.dedent(u"""\
         File "<test>", line 1
         a message
 
         File "<test>", line 2
         b message
+
+        File "<test>", lines 2-3
+        c message
 
         """)
 

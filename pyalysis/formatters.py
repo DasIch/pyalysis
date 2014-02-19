@@ -59,14 +59,24 @@ class TextFormatter(object):
         """
         Formats a single `warning`.
         """
+        if hasattr(warning, 'start') and hasattr(warning, 'end'):
+            if warning.start.line == warning.end.line:
+                location = u'line {}'.format(warning.start.line)
+            else:
+                location = u'lines {}-{}'.format(
+                    warning.start.line,
+                    warning.end.line
+                )
+        else:
+            location = u'line {}'.format(warning.lineno)
         self.output.write(
             textwrap.dedent(u"""\
-                File "{file}", line {lineno}
+                File "{file}", {location}
                 {message}
 
             """).format(
                 file=warning.file,
-                lineno=warning.lineno,
+                location=location,
                 message=textwrap.fill(warning.message)
             )
         )
