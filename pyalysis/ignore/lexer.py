@@ -33,11 +33,16 @@ IGNORE_DEFINITIONS = list(map(re.compile, [r'\s']))
 
 
 class LexingError(Exception):
-    pass
+    """
+    Raised when an error occurred during lexing.
+    """
 
 
 @implements_iterator
 class TokenStream(object):
+    """
+    An iterator that implements :meth:`lookahead`.
+    """
     def __init__(self, iterator):
         self.iterator = iterator
 
@@ -52,12 +57,19 @@ class TokenStream(object):
         return next(self.iterator)
 
     def lookahead(self, n=1):
+        """
+        Returns the next `n` tokens in a list.
+        """
         while len(self._remaining) < n:
             self._remaining.append(next(self))
         return [self._remaining[i] for i in range(n)]
 
 
 def lex(source):
+    """
+    Returns a :class:`TokenStream` yielding
+    :class:`~pyalysis.ignore.tokens.Token` objects.
+    """
     return TokenStream(_lex(source))
 
 
