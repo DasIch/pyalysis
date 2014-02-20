@@ -70,4 +70,7 @@ def iter_subclasses(cls):
 
 
 def count_digits(n):
+    """
+    Returns the number of digits in the given integer `n`.
+    """
     return int(math.floor(math.log10(n))) + 1
