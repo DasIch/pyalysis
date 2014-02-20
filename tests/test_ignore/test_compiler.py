@@ -94,6 +94,26 @@ from pyalysis.ignore.compiler import compile
         u'print-statement \n lineno >= 2',
         PrintStatement(u'foo', '<test>', 3),
         False
+    ),
+    (
+        u'print-statement \n message = "foo"\n lineno = 2',
+        PrintStatement(u'foo', '<test>', 1),
+        False
+    ),
+    (
+        u'print-statement \n message = "foo"\n lineno = 2',
+        PrintStatement(u'foo', '<test>', 2),
+        False
+    ),
+    (
+        u'print-statement \n message = "foo"\n lineno = 2',
+        PrintStatement(u'bar', '<test>', 2),
+        False
+    ),
+    (
+        u'print-statement \n message = "foo"\n lineno = 2',
+        PrintStatement(u'bar', '<test>', 3),
+        True
     )
 ])
 def test_compile(source, warning, allowed):

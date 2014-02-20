@@ -37,7 +37,9 @@ def compile_filter(filter):
 
 def compile_expressions(expressions):
     matchers = list(map(compile_expression, expressions))
-    return lambda warning: all(matcher(warning) for matcher in matchers)
+    return lambda warning: not expressions or any(
+        matcher(warning) for matcher in matchers
+    )
 
 
 def compile_expression(expression):
