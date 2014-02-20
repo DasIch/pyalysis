@@ -55,6 +55,9 @@ else:
 
 
 class classproperty(object):
+    """
+    Like :func:`property` but acts as a class instead of an instance attribute.
+    """
     def __init__(self, fget):
         self.fget = fget
 
