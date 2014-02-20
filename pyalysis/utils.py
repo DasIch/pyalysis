@@ -63,6 +63,9 @@ class classproperty(object):
 
 
 def iter_subclasses(cls):
+    """
+    Returns all subclasses of `cls` in postorder.
+    """
     for subclass in cls.__subclasses__():
         for subsubclass in iter_subclasses(subclass):
             yield subsubclass
