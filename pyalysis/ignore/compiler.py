@@ -16,6 +16,11 @@ from pyalysis.ignore.ast import (
 
 
 def compile(filters):
+    """
+    Given a list of :class:`pyalysis.ignore.ast.Filter` instances as returned
+    by :class:`pyalysis.ignore.verifier.verify`, returns a callable that called
+    with a warning returns `True`, if the warning didn't match.
+    """
     compiled = map(compile_filter, filters)
     return lambda warning: any(f(warning) for f in compiled)
 
