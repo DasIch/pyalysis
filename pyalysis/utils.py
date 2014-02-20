@@ -53,6 +53,14 @@ else:
             file.seek(0)
         return encoding
 
+detect_encoding.__doc__ = """
+Returns the encoding of a Python module given as a file-like object in binary
+mode.
+
+If a utf-8 BOM (byte-order mark) is found along with an encoding declaration
+that defines an encoding other than utf-8, a :exc:`SyntaxError` is raised.
+"""
+
 
 class classproperty(object):
     """
