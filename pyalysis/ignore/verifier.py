@@ -15,6 +15,10 @@ from pyalysis._compat import text_type
 
 
 class IgnoreVerificationWarning(Warning):
+    """
+    Represents a warning for semantic issue with the contents of an ignore
+    file.
+    """
     def __init__(self, message, file, start, end, lines):
         Warning.__init__(self, message, file)
         self.start = start
@@ -34,6 +38,17 @@ class IgnoreVerificationWarning(Warning):
 
 
 def verify(ignore_file, ast):
+    """
+    Takes a file-like object `ignore_file` and a
+    :class:`pyalysis.ignore.ast.IgnoreFile` instance `ast`.
+
+    Returns a tuple with a list of :class:`pyalysis.ignore.ast.Filter` objects
+    and a list of :class:`IgnoreVerificationWarning` objects.
+
+    The filters are taken from the given `ast`. Individual filters will have
+    invalid expressions removed and filters that cannot be coerced into valid
+    filters will be removed entirely.
+    """
     return _Verifier(ignore_file, ast).verify()
 
 
