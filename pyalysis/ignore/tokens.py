@@ -14,6 +14,12 @@ TokenBase = namedtuple('TokenBase', ['lexeme', 'start', 'end'])
 
 
 class Token(TokenBase):
+    """
+    Represents a token of some type.
+
+    Takes the `lexeme` described by the token, the `start` and `end` location
+    within the source.
+    """
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             return TokenBase.__eq__(self, other)
@@ -33,28 +39,42 @@ class Token(TokenBase):
 
 
 class Name(Token):
-    pass
+    """
+    Represents a name.
+    """
 
 
 class Newline(Token):
-    pass
+    """
+    Represents a newline.
+    """
 
 
 class Indent(Token):
-    pass
+    """
+    Represents an added level of indentation.
+    """
 
 
 class Dedent(Token):
-    pass
+    """
+    Represents a removed level of indentation.
+    """
 
 
 class Operator(Token):
-    pass
+    """
+    Represents an operator.
+    """
 
 
 class String(Token):
-    pass
+    """
+    Represents a string.
+    """
 
 
 class Integer(Token):
-    pass
+    """
+    Represents an integer.
+    """
