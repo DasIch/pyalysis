@@ -10,6 +10,10 @@ from pyalysis.ignore import tokens, ast
 
 
 def parse(tokens, filename='<unknown>'):
+    """
+    Parses a :class:`pyalysis.ignore.TokenStream` and returns a
+    :class:`pyalysis.ast.IgnoreFile` object.
+    """
     return ast.IgnoreFile(filename, list(parse_filters(tokens)))
 
 
