@@ -11,7 +11,7 @@ import operator
 from pyalysis.warnings import WARNINGS
 from pyalysis.ignore.ast import (
     BinaryOperation, Equal, LessThan, GreaterThan, LessOrEqualThan,
-    GreaterOrEqualThan
+    GreaterOrEqualThan, Name
 )
 
 
@@ -56,7 +56,13 @@ def compile_binary_operation(operation):
         LessOrEqualThan: operator.le,
         GreaterOrEqualThan: operator.ge
     }[operation.__class__]
-    return lambda warning: op(
-        getattr(warning, operation.name.name),
-        operation.literal.value
-    )
+    if isinstance(operation.left, Name):
+        return lambda warning: op(
+            getattr(warning, operation.name.name),
+            operation.literal.value
+        )
+    else:
+        return lambda warning: op(
+            operation.literal.value,
+            getattr(warning, operation.name.name)
+        )

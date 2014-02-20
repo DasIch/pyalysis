@@ -56,6 +56,21 @@ from pyalysis.ignore.compiler import compile
         True
     ),
     (
+        u'print-statement \n 3 > lineno',
+        PrintStatement(u'foo', '<test>', 1),
+        False
+    ),
+    (
+        u'print-statement \n 3 > lineno',
+        PrintStatement(u'foo', '<test>', 2),
+        False
+    ),
+    (
+        u'print-statement \n 3 > lineno',
+        PrintStatement(u'foo', '<test>', 3),
+        True
+    ),
+    (
         u'print-statement \n lineno > 1',
         PrintStatement(u'foo', '<test>', 1),
         True
