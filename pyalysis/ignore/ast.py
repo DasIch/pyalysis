@@ -9,6 +9,9 @@
 
 
 class Node(object):
+    """
+    Represents a node in the ast.
+    """
     def __init__(self, start, end):
         self.start = start
         self.end = end
@@ -28,6 +31,12 @@ class Node(object):
 
 
 class IgnoreFile(Node):
+    """
+    Represents an ignore file.
+
+    :param filename: The name of the file being represented.
+    :param filters: A list of :class:`Filter` instances.
+    """
     def __init__(self, filename, filters):
         self.filename = filename
         self.filters = filters
@@ -54,6 +63,12 @@ class IgnoreFile(Node):
 
 
 class Filter(Node):
+    """
+    Represents a filter for some type of warning.
+
+    :param name: The name of the type of warnings being filtered.
+    :param expressions: A list of :class:`Expression` instances.
+    """
     def __init__(self, name, expressions, start, end):
         Node.__init__(self, start, end)
         self.name = name
@@ -71,6 +86,9 @@ class Filter(Node):
 
 
 class Name(Node):
+    """
+    Represents a name.
+    """
     def __init__(self, name, start, end):
         Node.__init__(self, start, end)
         self.name = name
@@ -83,6 +101,9 @@ class Name(Node):
 
 
 class Literal(Node):
+    """
+    Represents a literal.
+    """
     def __init__(self, value, start, end):
         Node.__init__(self, start, end)
         self.value = value
@@ -95,14 +116,30 @@ class Literal(Node):
 
 
 class String(Literal):
-    pass
+    """
+    Represents a string.
+    """
 
 
 class Integer(Literal):
-    pass
+    """
+    Represents an integer.
+    """
 
 
-class BinaryOperation(Node):
+class Expression(Node):
+    """
+    Represents an expression.
+    """
+
+
+class BinaryOperation(Expression):
+    """
+    Represents a binary operation.
+
+    :param left: A :class:`Name` or :class:`Literal`.
+    :param right: A :class:`Name` or :class:`Literal`.
+    """
     def __init__(self, left, right, start, end):
         Node.__init__(self, start, end)
         self.left = left
@@ -110,6 +147,10 @@ class BinaryOperation(Node):
 
     @property
     def name(self):
+        """
+        Returns the side of the operation that is the :class:`Name` instance
+        or `None`.
+        """
         if isinstance(self.left, Name):
             return self.left
         elif isinstance(self.right, Name):
@@ -117,6 +158,10 @@ class BinaryOperation(Node):
 
     @property
     def literal(self):
+        """
+        Returns the side of the operation that is the :class:`Literal` instance
+        or `None`.
+        """
         if isinstance(self.left, Name) and isinstance(self.right, Name):
             return None
         if isinstance(self.left, Name):
@@ -135,20 +180,30 @@ class BinaryOperation(Node):
 
 
 class Equal(BinaryOperation):
-    pass
+    """
+    Represents an equal ``=`` operation.
+    """
 
 
 class LessThan(BinaryOperation):
-    pass
+    """
+    Represents a less than ``<`` operation.
+    """
 
 
 class GreaterThan(BinaryOperation):
-    pass
+    """
+    Represents a greater than ``>`` operation.
+    """
 
 
 class LessOrEqualThan(BinaryOperation):
-    pass
+    """
+    Represents a less or equal than ``<=`` operation.
+    """
 
 
 class GreaterOrEqualThan(BinaryOperation):
-    pass
+    """
+    Represents a greater or equal than ``>=`` operation.
+    """
