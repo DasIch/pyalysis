@@ -37,7 +37,6 @@ class Token(TokenBase):
         )
 
 
-
 class Name(Token):
     """
     Represents a name.
