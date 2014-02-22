@@ -19,9 +19,8 @@ INTERPRETER_INDEPENDENT_ENVIRONMENTS = OrderedDict([
         (u'commands', [u'py.test tests'])
     ])),
     (u'pyalysis', OrderedDict([
-        (u'whitelist_externals', [u'sh']),
         (u'commands', [
-            u'sh -c "find pyalysis tests -iname \\"*.py\\" | xargs pyalysis"'
+            u'pyalysis pyalysis tests'
         ])
     ])),
     (u'pyflakes', OrderedDict([
