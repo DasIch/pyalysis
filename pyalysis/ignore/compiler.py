@@ -8,7 +8,10 @@
 """
 from io import StringIO
 from contextlib import contextmanager
-import __builtin__
+try:
+    import builtins
+except ImportError: # PY2
+    import __builtin__ as builtins
 
 from pyalysis.warnings import WARNINGS
 from pyalysis.ignore.ast import (
@@ -60,7 +63,7 @@ class Compiler(object):
             for filter in self.filters:
                 self.compile_filter(filter)
             self.write_line(u'return True')
-        code = __builtin__.compile(self.source.getvalue(), '', 'exec')
+        code = builtins.compile(self.source.getvalue(), '', 'exec')
         locals = {}
         exec(code, {'WARNINGS': WARNINGS}, locals)
         return locals['predicate']
