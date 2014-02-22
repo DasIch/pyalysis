@@ -10,7 +10,7 @@ from io import StringIO
 from contextlib import contextmanager
 try:
     import builtins
-except ImportError: # PY2
+except ImportError:  # PY2
     import __builtin__ as builtins
 
 from pyalysis.warnings import WARNINGS

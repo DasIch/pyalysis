@@ -41,7 +41,7 @@ def parse(file):
     encoding = detect_encoding(file)
     file = codecs.lookup(encoding).streamreader(file)
     source = file.read()
-    source += u'\n' # necessary to fix weird parsing error
+    source += u'\n'  # necessary to fix weird parsing error
     features = _detect_future_features(source)
     if u'print_function' in features:
         grammar = pygram.python_grammar_no_print_statement
