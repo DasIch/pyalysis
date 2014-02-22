@@ -26,7 +26,7 @@ class Warning(object):
                 setattr(self, name, arg)
             else:
                 raise TypeError(
-                    '__init__() got an unexpected keyword argument {!r}' \
+                    '__init__() got an unexpected keyword argument {!r}'
                             .format(name)
                 )
 
