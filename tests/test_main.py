@@ -67,3 +67,25 @@ def test_main_ignore(tmpcwd):
         foo.write(u'def foo():\n  pass')
 
     check_output(['pyalysis', module_path]) == u''
+
+
+def test_main_directory(tmpcwd):
+    os.mkdir('foo')
+    with codecs.open('foo/spam.py', 'w', encoding='utf-8') as spam:
+        spam.write(u'def foo():\n pass')
+
+    with codecs.open('foo/eggs.py', 'w', encoding='utf-8') as eggs:
+        eggs.write(u'def foo():\n pass')
+
+    with pytest.raises(subprocess.CalledProcessError) as exc_info:
+        check_output(['pyalysis', 'foo'])
+    error = exc_info.value
+    assert error.returncode == 1
+    assert error.output.decode('utf-8') == textwrap.dedent(u"""\
+    File "foo/eggs.py", line 2
+    Indented by 1 spaces instead of 4 as demanded by PEP 8
+
+    File "foo/spam.py", line 2
+    Indented by 1 spaces instead of 4 as demanded by PEP 8
+
+    """)

@@ -9,6 +9,7 @@
     :license: BSD, see LICENSE.rst
 """
 from __future__ import print_function
+import os
 import sys
 
 from argvard import Argvard
@@ -26,7 +27,20 @@ def version(context):
     sys.exit(0)
 
 
-@application.main('files...')
-def main(context, files):
+def iter_python_files(path):
+    for root, _, files in os.walk(path):
+        for file in files:
+            if file.endswith('.py'):
+                yield os.path.join(root, file)
+
+
+@application.main('paths...')
+def main(context, paths):
     pyalysis = Pyalysis()
+    files = []
+    for path in paths:
+        if os.path.isdir(path):
+            files.extend(iter_python_files(path))
+        else:
+            files.append(path)
     pyalysis.analyse(files)
