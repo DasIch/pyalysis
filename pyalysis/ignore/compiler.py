@@ -60,7 +60,6 @@ class Compiler(object):
             for filter in self.filters:
                 self.compile_filter(filter)
             self.write_line(u'return True')
-        print self.source.getvalue()
         code = __builtin__.compile(self.source.getvalue(), '', 'exec')
         locals = {}
         exec(code, {'WARNINGS': WARNINGS}, locals)
