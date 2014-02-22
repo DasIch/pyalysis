@@ -96,7 +96,7 @@ def analyse_indentation(analyser):
         if added_indentation != 4:
             analyser.emit(
                 WrongNumberOfIndentationSpaces,
-                u'Indented by {0} spaces instead of 4 as demanded by PEP 8' \
+                u'Indented by {0} spaces instead of 4 as demanded by PEP 8'
                         .format(added_indentation),
                 tok
             )
