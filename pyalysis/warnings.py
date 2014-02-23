@@ -27,7 +27,7 @@ class Warning(object):
             else:
                 raise TypeError(
                     '__init__() got an unexpected keyword argument {!r}'
-                            .format(name)
+                    .format(name)
                 )
 
 
