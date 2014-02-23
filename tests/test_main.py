@@ -81,11 +81,10 @@ def test_main_directory(tmpcwd):
         check_output(['pyalysis', 'foo'])
     error = exc_info.value
     assert error.returncode == 1
-    assert error.output.decode('utf-8') == textwrap.dedent(u"""\
-    File "foo/eggs.py", line 2
-    Indented by 1 spaces instead of 4 as demanded by PEP 8
-
+    messages = error.output.decode('utf-8').rstrip().split(u'\n\n')
+    assert textwrap.dedent(u"""\
     File "foo/spam.py", line 2
-    Indented by 1 spaces instead of 4 as demanded by PEP 8
-
-    """)
+    Indented by 1 spaces instead of 4 as demanded by PEP 8""") in messages
+    assert textwrap.dedent(u"""\
+    File "foo/eggs.py", line 2
+    Indented by 1 spaces instead of 4 as demanded by PEP 8""") in messages
