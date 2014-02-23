@@ -26,6 +26,10 @@ INTERPRETER_INDEPENDENT_ENVIRONMENTS = OrderedDict([
     (u'pyflakes', OrderedDict([
         (u'deps', [u'pyflakes>=0.7.3']),
         (u'commands', [u'pyflakes pyalysis tests'])
+    ])),
+    (u'pep8', OrderedDict([
+        (u'deps', [u'pep8>=1.4.6']),
+        (u'commands', [u'pep8 pyalysis'])
     ]))
 ])
 
