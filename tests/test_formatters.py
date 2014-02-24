@@ -41,7 +41,6 @@ class TestJSONFormatter(object):
                 10
             ], 
             "file": "<test>", 
-            "lineno": 1, 
             "message": "a message", 
             "start": [
                 1, 
@@ -54,7 +53,6 @@ class TestJSONFormatter(object):
                 20
             ], 
             "file": "<test>", 
-            "lineno": 2, 
             "message": "b message", 
             "start": [
                 2, 
@@ -67,7 +65,6 @@ class TestJSONFormatter(object):
                 20
             ], 
             "file": "<test>", 
-            "lineno": 2, 
             "message": "c message", 
             "start": [
                 2, 

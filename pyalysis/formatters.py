@@ -9,7 +9,6 @@
 import json
 import textwrap
 
-from pyalysis.warnings import TokenWarning
 from pyalysis.utils import count_digits
 from pyalysis._compat import PYPY, text_type
 
@@ -29,14 +28,11 @@ class JSONFormatter(object):
         """
         result = {
             u'message': warning.message,
-            u'lineno': warning.lineno,
             u'file': warning.file
         }
-        if isinstance(warning, TokenWarning):
-            result.update({
-                u'start': warning.start,
-                u'end': warning.end
-            })
+        for attribute in ['start', 'end', 'lineno']:
+            if hasattr(warning, attribute):
+                result.update({attribute: getattr(warning, attribute)})
         self.dump(result)
 
     def dump(self, d):

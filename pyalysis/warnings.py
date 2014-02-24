@@ -70,17 +70,14 @@ class LineTooLong(LineWarning):
 
 class TokenWarning(Warning):
     attributes = Warning.attributes + [
-        ('lineno', int)
+        ('start', (int, int)),
+        ('end', (int, int))
     ]
 
     def __init__(self, message, file, start, end):
         Warning.__init__(self, message, file)
         self.start = start
         self.end = end
-
-    @property
-    def lineno(self):
-        return self.start[0]
 
 
 @PEP8Warning.register
