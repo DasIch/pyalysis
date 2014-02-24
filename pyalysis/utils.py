@@ -10,6 +10,7 @@ import math
 import re
 import codecs
 import tokenize
+from collections import namedtuple
 
 from pyalysis._compat import PY2
 
@@ -88,3 +89,6 @@ def count_digits(n):
     Returns the number of digits in the given integer `n`.
     """
     return int(math.floor(math.log10(n))) + 1
+
+
+Location = namedtuple('Location', ['line', 'column'])

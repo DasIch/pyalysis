@@ -8,8 +8,9 @@
 """
 from collections import namedtuple
 
+from pyalysis.utils import Location
 
-Location = namedtuple('Location', ['line', 'column'])
+
 TokenBase = namedtuple('TokenBase', ['lexeme', 'start', 'end'])
 
 
@@ -77,3 +78,6 @@ class Integer(Token):
     """
     Represents an integer.
     """
+
+
+__all__ = ['Location']

@@ -10,7 +10,7 @@ import codecs
 
 from blinker import Signal
 
-from pyalysis.utils import detect_encoding
+from pyalysis.utils import detect_encoding, Location
 from pyalysis.warnings import LineTooLong
 
 
@@ -27,8 +27,14 @@ class LineAnalyser(object):
         self.encoding = detect_encoding(module)
         self.warnings = []
 
-    def emit(self, warning_cls, message, lineno):
-        self.warnings.append(warning_cls(message, self.module.name, lineno))
+    def emit(self, warning_cls, message, lineno, start, end):
+        self.warnings.append(
+            warning_cls(
+                message, self.module.name,
+                Location(lineno, start),
+                Location(lineno, end)
+            )
+        )
 
     def analyse(self):
         self.on_analyse.send(self)
@@ -45,5 +51,7 @@ def check_line_length(analyser, lineno, line):
             LineTooLong,
             u'Line is longer than 79 characters. '
             u'You should keep it below that',
-            lineno
+            lineno,
+            79,
+            len(line.rstrip())
         )

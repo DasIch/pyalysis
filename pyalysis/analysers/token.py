@@ -16,11 +16,11 @@ from blinker import Signal
 from pyalysis.warnings import (
     WrongNumberOfIndentationSpaces, MixedTabsAndSpaces
 )
+from pyalysis.utils import Location
 from pyalysis._compat import PY2, with_metaclass
 
 
 Token = namedtuple('Token', ['type', 'lexeme', 'start', 'end', 'logical_line'])
-Location = namedtuple('Location', ['line', 'column'])
 
 
 class TokenAnalyserMeta(type):

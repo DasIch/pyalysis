@@ -58,7 +58,8 @@ class Python3CompatibilityWarning(AbstractWarning):
 
 class LineWarning(Warning):
     attributes = Warning.attributes + [
-        ('lineno', int)
+        ('start', (int, int)),
+        ('end', (int, int))
     ]
 
 
