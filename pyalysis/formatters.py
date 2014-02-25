@@ -26,14 +26,10 @@ class JSONFormatter(object):
         """
         Formats a single `warning`.
         """
-        result = {
-            u'message': warning.message,
-            u'file': warning.file
-        }
-        for attribute in ['start', 'end', 'lineno']:
-            if hasattr(warning, attribute):
-                result.update({attribute: getattr(warning, attribute)})
-        self.dump(result)
+        self.dump({
+            attribute_name: getattr(warning, attribute_name)
+            for (attribute_name, _) in warning.attributes
+        })
 
     def dump(self, d):
         js = json.dumps(d, ensure_ascii=False, sort_keys=True, indent=4)
