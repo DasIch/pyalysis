@@ -124,7 +124,8 @@ class DivStatement(ASTWarning):
 
 class CSTWarning(Warning):
     attributes = Warning.attributes + [
-        ('lineno', int)
+        ('start', (int, int)),
+        ('end', (int, int))
     ]
 
 

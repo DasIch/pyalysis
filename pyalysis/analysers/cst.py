@@ -15,7 +15,7 @@ from lib2to3.pgen2.token import tok_name as TOKEN_NAMES
 from blinker import Signal
 
 from pyalysis.warnings import ExtraneousWhitespace
-from pyalysis.utils import detect_encoding
+from pyalysis.utils import detect_encoding, Location
 from pyalysis._compat import with_metaclass
 
 
@@ -72,8 +72,25 @@ class CSTAnalyser(with_metaclass(CSTAnalyserMeta)):
 
     def emit(self, warning_cls, message, node):
         self.warnings.append(
-            warning_cls(message, self.module.name, node.get_lineno())
+            warning_cls(
+                message, self.module.name,
+                self._get_start_location(node),
+                self._get_end_location(node)
+            )
         )
+
+    def _get_start_location(self, node):
+        while not isinstance(node, pytree.Leaf):
+            node = node.children[0]
+        return Location(node.lineno, node.column)
+
+    def _get_end_location(self, node):
+        while not isinstance(node, pytree.Leaf):
+            node = node.children[-1]
+        if node.next_sibling is None:
+            return Location(node.lineno, node.column + len(node.value))
+        else:
+            return Location(node.next_sibling.lineno, node.next_sibling.column)
 
     def analyse(self):
         self.warnings = []
@@ -118,8 +135,8 @@ def check_extraneous_whitespace_inside_list(analyser, node):
                 node
             )
         if node.children[1].type == nodes.listmaker:
-            for node in node.children[1].children:
-                if node.type == nodes.COMMA and node.prefix:
+            for children in node.children[1].children:
+                if children.type == nodes.COMMA and children.prefix:
                     analyser.emit(
                         ExtraneousWhitespace,
                         u'Extraneous whitespace before comma in list.',

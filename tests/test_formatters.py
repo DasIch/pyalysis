@@ -94,18 +94,36 @@ class TestJSONFormatter(object):
     def test_cst_warning(self):
         output = StringIO()
         formatter = JSONFormatter(output)
-        formatter.format(CSTWarning(u'a message', '<test>', 1))
-        formatter.format(CSTWarning(u'b message', '<test>', 2))
+        formatter.format(
+            CSTWarning(u'a message', '<test>', Location(1, 0), Location(1, 10))
+        )
+        formatter.format(
+            CSTWarning(u'b message', '<test>', Location(2, 0), Location(2, 10))
+        )
         assert output.getvalue() == textwrap.dedent(u"""\
         {
+            "end": [
+                1, 
+                10
+            ], 
             "file": "<test>", 
-            "lineno": 1, 
-            "message": "a message"
+            "message": "a message", 
+            "start": [
+                1, 
+                0
+            ]
         }
         {
+            "end": [
+                2, 
+                10
+            ], 
             "file": "<test>", 
-            "lineno": 2, 
-            "message": "b message"
+            "message": "b message", 
+            "start": [
+                2, 
+                0
+            ]
         }
         """)
 
@@ -158,8 +176,12 @@ class TestTextFormatter(object):
     def test_cst_warning(self):
         output = StringIO()
         formatter = TextFormatter(output)
-        formatter.format(CSTWarning(u'a message', '<test>', 1))
-        formatter.format(CSTWarning(u'b message', '<test>', 2))
+        formatter.format(
+            CSTWarning(u'a message', '<test>', Location(1, 0), Location(1, 10))
+        )
+        formatter.format(
+            CSTWarning(u'b message', '<test>', Location(2, 0), Location(2, 10))
+        )
         assert output.getvalue() == textwrap.dedent(u"""\
         File "<test>", line 1
         a message
