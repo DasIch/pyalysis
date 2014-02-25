@@ -27,12 +27,12 @@ class LineAnalyser(object):
         self.encoding = detect_encoding(module)
         self.warnings = []
 
-    def emit(self, warning_cls, message, lineno, start, end):
+    def emit(self, warning_cls, message):
         self.warnings.append(
             warning_cls(
                 message, self.module.name,
-                Location(lineno, start),
-                Location(lineno, end)
+                Location(self.lineno, 0),
+                Location(self.lineno, len(self.line))
             )
         )
 
@@ -40,6 +40,8 @@ class LineAnalyser(object):
         self.on_analyse.send(self)
         reader = codecs.lookup(self.encoding).streamreader(self.module)
         for i, line in enumerate(reader, 1):
+            self.lineno = i
+            self.line = line
             self.on_line.send(self, lineno=i, line=line)
         return self.warnings
 
@@ -51,7 +53,4 @@ def check_line_length(analyser, lineno, line):
             LineTooLong,
             u'Line is longer than 79 characters. '
             u'You should keep it below that',
-            lineno,
-            79,
-            len(line.rstrip())
         )
