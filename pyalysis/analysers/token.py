@@ -58,7 +58,7 @@ class TokenAnalyser(with_metaclass(TokenAnalyserMeta, AnalyserBase)):
         """
         AnalyserBase.emit(self, warning_cls, message, tok.start, tok.end)
 
-    def generate_tokens(self):
+    def _generate_tokens(self):
         """
         Generates tokens similar to :func:`tokenize.generate_tokens` but uses
         namedtuples, see :class:`Token` and :class:`Location`.
@@ -83,7 +83,7 @@ class TokenAnalyser(with_metaclass(TokenAnalyserMeta, AnalyserBase)):
         :class:`pyalysis.warnings.TokenWarning` instances.
         """
         self.on_analyse.send(self)
-        for tok in self.generate_tokens():
+        for tok in self._generate_tokens():
             name = token.tok_name[tok.type]
             signal_name = 'on_' + name
             signal = getattr(self, signal_name)
