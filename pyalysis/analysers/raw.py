@@ -19,6 +19,9 @@ class LineAnalyser(AnalyserBase):
     """
     Line-level analyser of Python source code.
     """
+
+    #: :class:`blinker.Signal` instance that will be emitted for each line in
+    #: the module with the line number (`lineno`) and `line` as argument.
     on_line = Signal()
 
     def __init__(self, module):
