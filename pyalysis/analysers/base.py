@@ -16,6 +16,10 @@ from pyalysis._compat import PY2
 
 
 class AnalyserBase(object):
+    """
+    A base class for analysers. To implement an analyser you should subclass
+    this class and implement :meth:`analyse`.
+    """
     #: :class:`blinker.Signal` instance that will be called by :meth:`analyse`,
     #: with the :class:`AnalyserBase` instance as sender.
     on_analyse = PerClassAttribute(Signal)
