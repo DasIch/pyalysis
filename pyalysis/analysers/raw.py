@@ -29,12 +29,7 @@ class LineAnalyser(AnalyserBase):
     def emit(self, warning_cls, message):
         start = Location(self.lineno, 0)
         end = Location(self.lineno, len(self.line))
-        self.warnings.append(
-            warning_cls(
-                message, self.module.name, start, end,
-                list(self.get_logical_lines(start, end))
-            )
-        )
+        AnalyserBase.emit(self, warning_cls, message, start, end)
 
     def analyse(self):
         self.on_analyse.send(self)
