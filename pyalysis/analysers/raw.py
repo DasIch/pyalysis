@@ -30,6 +30,11 @@ class LineAnalyser(AnalyserBase):
         self.encoding = detect_encoding(module)
 
     def emit(self, warning_cls, message):
+        """
+        Adds an instance of `warning_cls` to :attr:`warnings`.
+
+        `warning_cls` will be called as described in :meth:`AnalyserBase.emit`.
+        """
         start = Location(self.lineno, 0)
         end = Location(self.lineno, len(self.line))
         AnalyserBase.emit(self, warning_cls, message, start, end)
