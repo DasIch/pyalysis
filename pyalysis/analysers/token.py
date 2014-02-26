@@ -49,8 +49,12 @@ class TokenAnalyser(with_metaclass(TokenAnalyserMeta, AnalyserBase)):
 
     def emit(self, warning_cls, message, tok):
         """
-        Creates an instance of `warning_cls` using the given `message` and the
-        information in `tok`.
+        Adds an instance of `warning_cls` to :attr:`warnings`.
+
+        `tok` is expected to be a token as passed to one of the token signals
+        emitted.
+
+        `warning_cls` will be called as described in :meth:`AnalyserBase.emit`.
         """
         AnalyserBase.emit(self, warning_cls, message, tok.start, tok.end)
 
