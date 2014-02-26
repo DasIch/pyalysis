@@ -28,7 +28,14 @@ class TokenAnalyserMeta(type):
     def __init__(self, name, bases, attributes):
         type.__init__(self, name, bases, attributes)
         for token_name in token.tok_name.values():
-            setattr(self, 'on_' + token_name, Signal())
+            setattr(
+                self,
+                'on_' + token_name,
+                Signal("""
+                :class:`blinker.Signal` instance that will be emitted for each
+                {0} token in the module with the token (`tok`) as argument.
+                """)
+            )
 
 
 class TokenAnalyser(with_metaclass(TokenAnalyserMeta, AnalyserBase)):
