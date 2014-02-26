@@ -26,10 +26,12 @@ class VerifyTest(object):
 
     @pytest.fixture
     def attribute(self, supported_type):
-        return {
-            text_type: u'message',
-            int: u'lineno'
-        }[supported_type]
+        attributes = {
+            text_type: u'message'
+        }
+        if supported_type in attributes:
+            return attributes[supported_type]
+        pytest.skip('no fixture')
 
     @pytest.fixture
     def type_name(self, supported_type):
@@ -37,19 +39,21 @@ class VerifyTest(object):
             if issubclass(type, supported_type):
                 return type_name
 
-    @pytest.fixture(params=range(len(_types) - 1))
+    @pytest.fixture(params=range((len(_types) - 1) or 1))
     def unsupported_literal(self, request, supported_type):
         types = self._types[request.param:] + self._types[:request.param]
         for (type, literal, _) in types:
             if not issubclass(type, supported_type):
                 return literal
+        pytest.skip('no fixture')
 
-    @pytest.fixture(params=range(len(_types) - 1))
+    @pytest.fixture(params=range((len(_types) - 1) or 1))
     def unsupported_type_name(self, request, supported_type):
         types = self._types[request.param:] + self._types[:request.param]
         for (type, _, type_name) in types:
             if not issubclass(type, supported_type):
                 return type_name
+        pytest.skip('no fixture')
 
     def assert_verify(self, source, expected_filters, expected_warnings):
         file = StringIO(source)

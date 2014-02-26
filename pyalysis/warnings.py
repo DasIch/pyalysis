@@ -31,6 +31,20 @@ class Warning(object):
                 )
 
 
+class AnalyserWarning(Warning):
+    attributes = Warning.attributes + [
+        ('start', (int, int)),
+        ('end', (int, int))
+    ]
+
+    def __init__(self, message, file, start, end, lines):
+        self.message = message
+        self.file = file
+        self.start = start
+        self.end = end
+        self.lines = lines
+
+
 class AbstractWarningMeta(ABCMeta):
     def __init__(self, name, bases, attributes):
         ABCMeta.__init__(self, name, bases, attributes)
@@ -56,11 +70,8 @@ class Python3CompatibilityWarning(AbstractWarning):
     type = 'python3-compatibility'
 
 
-class LineWarning(Warning):
-    attributes = Warning.attributes + [
-        ('start', (int, int)),
-        ('end', (int, int))
-    ]
+class LineWarning(AnalyserWarning):
+    pass
 
 
 @PEP8Warning.register
@@ -68,16 +79,8 @@ class LineTooLong(LineWarning):
     type = 'line-too-long'
 
 
-class TokenWarning(Warning):
-    attributes = Warning.attributes + [
-        ('start', (int, int)),
-        ('end', (int, int))
-    ]
-
-    def __init__(self, message, file, start, end):
-        Warning.__init__(self, message, file)
-        self.start = start
-        self.end = end
+class TokenWarning(AnalyserWarning):
+    pass
 
 
 @PEP8Warning.register
@@ -89,10 +92,8 @@ class MixedTabsAndSpaces(TokenWarning):
     type = 'mixed-tabs-and-spaces'
 
 
-class ASTWarning(Warning):
-    attributes = Warning.attributes + [
-        ('lineno', int)
-    ]
+class ASTWarning(AnalyserWarning):
+    pass
 
 
 @PEP8Warning.register
@@ -122,11 +123,8 @@ class DivStatement(ASTWarning):
     type = 'div-statement'
 
 
-class CSTWarning(Warning):
-    attributes = Warning.attributes + [
-        ('start', (int, int)),
-        ('end', (int, int))
-    ]
+class CSTWarning(AnalyserWarning):
+    pass
 
 
 @PEP8Warning.register

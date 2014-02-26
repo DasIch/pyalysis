@@ -12,12 +12,24 @@ import pytest
 
 from pyalysis.ignore import load_ignore_filter
 from pyalysis.warnings import PrintStatement, DivStatement
-
+from pyalysis.utils import Location
 
 
 @pytest.mark.parametrize(('source', 'warning', 'allowed'), [
-    (u'print-statement', PrintStatement(u'message', '<test>', 1), False),
-    (u'print-statement', DivStatement(u'message', '<test>', 1), True)
+    (
+        u'print-statement',
+        PrintStatement(
+            u'message', '<test>', Location(1, 0), Location(1, 10), []
+        ),
+        False
+    ),
+    (
+        u'print-statement',
+        DivStatement(
+            u'message', '<test>', Location(1, 0), Location(1, 10), []
+        ),
+        True
+    )
 ])
 def test_load_ignore_filter(source, warning, allowed):
     file = StringIO(source)

@@ -16,6 +16,8 @@ from pyalysis.warnings import (
     MultipleImports, StarImport, IndiscriminateExcept, GlobalKeyword,
     PrintStatement, DivStatement
 )
+from pyalysis.analysers.base import AnalyserBase
+from pyalysis.utils import Location
 from pyalysis._compat import PY2, with_metaclass
 
 
@@ -28,26 +30,24 @@ class ASTAnalyserMeta(type):
                 setattr(self, 'on_' + name, Signal())
 
 
-class ASTAnalyser(with_metaclass(ASTAnalyserMeta)):
+class ASTAnalyser(with_metaclass(ASTAnalyserMeta, AnalyserBase)):
     """
     AST-level analyser of Python source code.
     """
-    on_analyse = Signal()
-
     def __init__(self, module):
-        self.module = module
+        AnalyserBase.__init__(self, module)
 
         self.ast = ast.parse(module.read(), module.name)
-        self.warnings = []
 
     def emit(self, warning_cls, message, node):
         """
         Creates an instance of `warning_cls` using the given `message` and the
         information in `node` and appends it to :attr:`warnings`.
         """
-        self.warnings.append(
-            warning_cls(message, self.module.name, node.lineno)
-        )
+        start_lineno, end_lineno = self.get_logical_line_range(node.lineno)
+        start = Location(start_lineno, 0)
+        end = Location(end_lineno, len(self.physical_lines[end_lineno - 1]))
+        AnalyserBase.emit(self, warning_cls, message, start, end)
 
     def analyse(self):
         """

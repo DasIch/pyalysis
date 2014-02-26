@@ -15,119 +15,32 @@ from pyalysis.ignore.lexer import lex
 from pyalysis.ignore.parser import parse
 from pyalysis.ignore.verifier import verify
 from pyalysis.ignore.compiler import compile
+from pyalysis.utils import Location
 
 
 @pytest.mark.parametrize(('source', 'warning', 'allowed'), [
-    (u'print-statement', PrintStatement(u'message', '<test>', 1), False),
-    (u'print-statement', DivStatement(u'message', '<test>', 1), True),
+    (
+        u'print-statement',
+        PrintStatement(
+            u'message', '<test>', Location(1, 0), Location(1, 10), []
+        ),
+        False
+    ),
+    (
+        u'print-statement',
+        DivStatement(
+            u'message', '<test>', Location(1, 0), Location(1, 10), []
+        ),
+        True
+    ),
     (
         u'print-statement \n message = "foo"',
-        PrintStatement(u'foo', '<test>', 1),
+        PrintStatement(u'foo', '<test>', Location(1, 0), Location(1, 10), []),
         False
     ),
     (
         u'print-statement \n message = "foo"',
-        PrintStatement(u'bar', '<test>', 1),
-        True
-    ),
-    (
-        u'print-statement \n lineno = 1',
-        PrintStatement(u'foo', '<test>', 1),
-        False
-    ),
-    (
-        u'print-statement \n lineno = 1',
-        PrintStatement(u'foo', '<test>', 2),
-        True
-    ),
-    (
-        u'print-statement \n lineno < 3',
-        PrintStatement(u'foo', '<test>', 1),
-        False
-    ),
-    (
-        u'print-statement \n lineno < 3',
-        PrintStatement(u'foo', '<test>', 2),
-        False
-    ),
-    (
-        u'print-statement \n lineno < 3',
-        PrintStatement(u'foo', '<test>', 3),
-        True
-    ),
-    (
-        u'print-statement \n 3 > lineno',
-        PrintStatement(u'foo', '<test>', 1),
-        False
-    ),
-    (
-        u'print-statement \n 3 > lineno',
-        PrintStatement(u'foo', '<test>', 2),
-        False
-    ),
-    (
-        u'print-statement \n 3 > lineno',
-        PrintStatement(u'foo', '<test>', 3),
-        True
-    ),
-    (
-        u'print-statement \n lineno > 1',
-        PrintStatement(u'foo', '<test>', 1),
-        True
-    ),
-    (
-        u'print-statement \n lineno > 1',
-        PrintStatement(u'foo', '<test>', 2),
-        False
-    ),
-    (
-        u'print-statement \n lineno <= 2',
-        PrintStatement(u'foo', '<test>', 1),
-        False
-    ),
-    (
-        u'print-statement \n lineno <= 2',
-        PrintStatement(u'foo', '<test>', 2),
-        False
-    ),
-    (
-        u'print-statement \n lineno <= 2',
-        PrintStatement(u'foo', '<test>', 3),
-        True
-    ),
-    (
-        u'print-statement \n lineno >= 2',
-        PrintStatement(u'foo', '<test>', 1),
-        True
-    ),
-    (
-        u'print-statement \n lineno >= 2',
-        PrintStatement(u'foo', '<test>', 2),
-        False
-    ),
-    (
-        u'print-statement \n lineno >= 2',
-        PrintStatement(u'foo', '<test>', 3),
-        False
-    ),
-    (
-        u'print-statement \n message = "foo"\n lineno = 2',
-        PrintStatement(u'foo', '<test>', 1),
-        False
-    ),
-    (
-        u'print-statement \n message = "foo"\n lineno = 2',
-        PrintStatement(u'foo', '<test>', 2),
-        False
-    ),
-    (
-        u'print-statement \n message = "foo"\n lineno = 2',
-        PrintStatement(u'bar', '<test>', 2),
-        False
-    ),
-    (
-        u'print-statement \n message = "foo"\n lineno = 2',
-        PrintStatement(u'bar', '<test>', 3),
+        PrintStatement(u'bar', '<test>', Location(1, 0), Location(1, 10), []),
         True
     )
 ])

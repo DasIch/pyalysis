@@ -11,6 +11,8 @@ import re
 import codecs
 import tokenize
 from collections import namedtuple
+from weakref import WeakKeyDictionary
+from contextlib import contextmanager
 
 from pyalysis._compat import PY2
 
@@ -92,3 +94,56 @@ def count_digits(n):
 
 
 Location = namedtuple('Location', ['line', 'column'])
+
+
+class PerClassAttribute(object):
+    """
+    A descriptor for per-class class attributes. The descriptor will create a
+    new attribute by calling `attribute_factory` for each class on which it is
+    accessed.
+
+    As with normal class attributes, class attributes defined with this
+    descriptor can be overridden in instances.
+
+    This descriptor is useful, if you want to define a class attribute you do
+    not want subclasses to identically inherit::
+
+        class SuperClass(object):
+            foo = PerClassAttribute(object)
+
+        class Child(SuperClass):
+            pass
+
+        assert SuperClass.foo is not Child.foo
+    """
+    def __init__(self, attribute_factory):
+        self.attribute_factory = attribute_factory
+
+        self.class2attribute = WeakKeyDictionary()
+        self.instance2attribute = WeakKeyDictionary()
+
+    def __get__(self, instance, owner):
+        if instance in self.instance2attribute:
+            return self.instance2attribute[instance]
+        if owner not in self.class2attribute:
+            self.class2attribute[owner] = self.attribute_factory()
+        return self.class2attribute[owner]
+
+    def __set__(self, instance, attribute):
+        self.instance2attribute[instance] = attribute
+
+    def __delete__(self, instance):
+        del self.instance2attribute[instance]
+
+
+@contextmanager
+def retain_file_position(file, position=0):
+    """
+    A contextmanager to temporarily seek the given `file` to `position`.
+    """
+    old_position = file.tell()
+    file.seek(position)
+    try:
+        yield
+    finally:
+        file.seek(old_position)

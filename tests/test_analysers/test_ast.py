@@ -41,7 +41,8 @@ class TestImport(ASTAnalyserTest):
         assert warning.message == (
             u'Multiple imports on one line. Should be on separate ones.'
         )
-        assert warning.lineno == 2
+        assert warning.start == (2, 0)
+        assert warning.end == (2, 15)
         assert warning.file == '<test>'
 
     def test_star_import(self):
@@ -53,7 +54,8 @@ class TestImport(ASTAnalyserTest):
         warning = warnings[0]
         assert isinstance(warning, StarImport)
         assert warning.message == u'from ... import * should be avoided.'
-        assert warning.lineno == 2
+        assert warning.start == (2, 0)
+        assert warning.end == (2, 17)
         assert warning.file == '<test>'
 
 
@@ -72,7 +74,8 @@ class TestExcept(ASTAnalyserTest):
         assert warning.message == (
             u'Never use except without a specific exception.'
         )
-        assert warning.lineno == 4
+        assert warning.start == (4, 0)
+        assert warning.end == (4, 7)
         assert warning.file == '<test>'
 
 
@@ -87,7 +90,8 @@ class TestGlobalKeyword(ASTAnalyserTest):
         warning = warnings[0]
         assert isinstance(warning, GlobalKeyword)
         assert warning.message == u'The global keyword should be avoided.'
-        assert warning.lineno == 3
+        assert warning.start == (3, 0)
+        assert warning.end == (3, 15)
         assert warning.file == '<test>'
 
 
@@ -105,7 +109,8 @@ class TestPrintStatement(ASTAnalyserTest):
             u'The print statement has been removed in Python 3. Import '
             u'print() with from __future__ import print_function instead.'
         )
-        assert warning.lineno == 2
+        assert warning.start == (2, 0)
+        assert warning.end == (2, len(source.strip()))
         assert warning.file == '<test>'
 
     def test_future_works(self):

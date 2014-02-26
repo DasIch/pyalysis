@@ -16,6 +16,7 @@ from blinker import Signal
 
 from pyalysis.warnings import ExtraneousWhitespace
 from pyalysis.utils import detect_encoding, Location
+from pyalysis.analysers.base import AnalyserBase
 from pyalysis._compat import with_metaclass
 
 
@@ -58,25 +59,19 @@ class CSTAnalyserMeta(type):
             setattr(self, 'on_' + name, Signal())
 
 
-class CSTAnalyser(with_metaclass(CSTAnalyserMeta)):
+class CSTAnalyser(with_metaclass(CSTAnalyserMeta, AnalyserBase)):
     """
     CST-level analyser of Python source code.
     """
-    on_analyse = Signal()
-
     def __init__(self, module):
-        self.module = module
+        AnalyserBase.__init__(self, module)
 
         self.cst = parse(module)
-        self.warnings = []
 
     def emit(self, warning_cls, message, node):
-        self.warnings.append(
-            warning_cls(
-                message, self.module.name,
-                self._get_start_location(node),
-                self._get_end_location(node)
-            )
+        AnalyserBase.emit(
+            self, warning_cls, message,
+            self._get_start_location(node), self._get_end_location(node)
         )
 
     def _get_start_location(self, node):

@@ -43,18 +43,22 @@ def test_main_unsuccessful(tmpdir):
     assert error.returncode == 1
     assert error.output.decode('utf-8') == textwrap.dedent(u"""\
     File "{0}", line 1
+      {1}
     Line is longer than 79 characters. You should keep it below that
 
     File "{0}", line 4
+        pass
     Indented by 2 spaces instead of 4 as demanded by PEP 8
 
     File "{0}", line 5
+      [ 1, 2]
     Extraneous whitespace at the beginning of a list.
 
     File "{0}", line 2
+      import os, sys
     Multiple imports on one line. Should be on separate ones.
 
-    """.format(module))
+    """.format(module, u'"' + u'x' * 80 + u'"'))
 
 
 def test_main_ignore(tmpcwd):
@@ -84,7 +88,9 @@ def test_main_directory(tmpcwd):
     messages = error.output.decode('utf-8').rstrip().split(u'\n\n')
     assert textwrap.dedent(u"""\
     File "foo/spam.py", line 2
+       pass
     Indented by 1 spaces instead of 4 as demanded by PEP 8""") in messages
     assert textwrap.dedent(u"""\
     File "foo/eggs.py", line 2
+       pass
     Indented by 1 spaces instead of 4 as demanded by PEP 8""") in messages

@@ -77,4 +77,3 @@ from pyalysis.ignore.lexer import lex
 ])
 def test_lexer(source, tokens):
     assert list(lex(source)) == tokens
-

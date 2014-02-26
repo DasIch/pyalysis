@@ -31,4 +31,3 @@ class TestLineLength(LineAnalyserTest):
         source = u'a' * 79 + u'\n'
         warnings = self.analyse_source(source)
         assert not warnings
-

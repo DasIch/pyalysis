@@ -12,27 +12,27 @@ from blinker import Signal
 
 from pyalysis.utils import detect_encoding, Location
 from pyalysis.warnings import LineTooLong
+from pyalysis.analysers.base import AnalyserBase
 
 
-class LineAnalyser(object):
+class LineAnalyser(AnalyserBase):
     """
     Line-level analyser of Python source code.
     """
-    on_analyse = Signal()
     on_line = Signal()
 
     def __init__(self, module):
-        self.module = module
+        AnalyserBase.__init__(self, module)
 
         self.encoding = detect_encoding(module)
-        self.warnings = []
 
     def emit(self, warning_cls, message):
+        start = Location(self.lineno, 0)
+        end = Location(self.lineno, len(self.line))
         self.warnings.append(
             warning_cls(
-                message, self.module.name,
-                Location(self.lineno, 0),
-                Location(self.lineno, len(self.line))
+                message, self.module.name, start, end,
+                list(self.get_logical_lines(start, end))
             )
         )
 

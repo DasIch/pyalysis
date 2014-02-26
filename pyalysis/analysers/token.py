@@ -17,6 +17,7 @@ from pyalysis.warnings import (
     WrongNumberOfIndentationSpaces, MixedTabsAndSpaces
 )
 from pyalysis.utils import Location
+from pyalysis.analysers.base import AnalyserBase
 from pyalysis._compat import PY2, with_metaclass
 
 
@@ -30,17 +31,13 @@ class TokenAnalyserMeta(type):
             setattr(self, 'on_' + token_name, Signal())
 
 
-class TokenAnalyser(with_metaclass(TokenAnalyserMeta)):
+class TokenAnalyser(with_metaclass(TokenAnalyserMeta, AnalyserBase)):
     """
     Token-level analyser of Python source code.
     """
-
-    on_analyse = Signal()
-
     def __init__(self, module):
-        self.module = module
+        AnalyserBase.__init__(self, module)
 
-        self.warnings = []
         self.indentation_stack = []
 
     def emit(self, warning_cls, message, tok):
@@ -48,9 +45,7 @@ class TokenAnalyser(with_metaclass(TokenAnalyserMeta)):
         Creates an instance of `warning_cls` using the given `message` and the
         information in `tok`.
         """
-        self.warnings.append(
-            warning_cls(message, self.module.name, tok.start, tok.end)
-        )
+        AnalyserBase.emit(self, warning_cls, message, tok.start, tok.end)
 
     def generate_tokens(self):
         """
